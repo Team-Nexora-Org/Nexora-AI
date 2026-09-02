@@ -16,6 +16,9 @@ export function Login() {
   const [busy, setBusy] = useState<'supervisor' | 'planner' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [selectedRole, setSelectedRole] = useState<'supervisor' | 'planner' | null>(null)
+  const [tempRole, setTempRole] = useState<'supervisor' | 'planner' | ''>('')
+
   useEffect(() => {
     api.supervisors().then((r) => {
       setSupervisors(r.supervisors)
@@ -64,70 +67,130 @@ export function Login() {
           </p>
         </div>
 
-        <div className="grid w-full gap-5 sm:grid-cols-2">
-          <Card className="overflow-hidden border-slate-200 shadow-sm">
-            <CardHeader className="bg-slate-900 pb-4 text-white">
-              <div className="flex items-center gap-2">
-                <HardHat className="h-5 w-5 text-amber-400" />
-                <CardTitle className="text-base">Supervisor</CardTitle>
-              </div>
-              <CardDescription className="text-slate-300">
-                Just tell us what happened.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Demo profile
-                </label>
-                <Select value={selectedSupervisor} onValueChange={setSelectedSupervisor}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select supervisor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {supervisors.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>
-                        {s.name} — {s.role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full" onClick={loginSupervisor} disabled={busy !== null || !selectedSupervisor}>
-                {busy === 'supervisor' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Continue as Supervisor
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="flex w-full justify-center">
+          {selectedRole === null && (
+            <div className="w-full max-w-md">
+              <Card className="overflow-hidden border-slate-200 shadow-sm">
+                <CardHeader className="bg-slate-900 pb-4 text-white">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList className="h-5 w-5 text-amber-400" />
+                    <CardTitle className="text-base">Role Selection</CardTitle>
+                  </div>
+                  <CardDescription className="text-slate-300">
+                    Please select your role to continue.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Select your role
+                    </label>
+                    <Select value={tempRole} onValueChange={(v) => setTempRole(v as 'supervisor' | 'planner')}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Choose a role..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="supervisor">Supervisor</SelectItem>
+                        <SelectItem value="planner">Project Planner</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    onClick={() => setSelectedRole(tempRole as 'supervisor' | 'planner')} 
+                    disabled={!tempRole}
+                  >
+                    Continue
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-          <Card className="overflow-hidden border-slate-200 shadow-sm">
-            <CardHeader className="bg-slate-800 pb-4 text-white">
-              <div className="flex items-center gap-2">
-                <ClipboardList className="h-5 w-5 text-amber-400" />
-                <CardTitle className="text-base">Project Planner</CardTitle>
-              </div>
-              <CardDescription className="text-slate-300">
-                Review decisions, not raw reports.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Demo profile
-                </label>
-                <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm">
-                  <div className="font-medium text-slate-800">Arun Sharma</div>
-                  <div className="text-xs text-slate-500">Project Planner — Unit-4 Expansion Project</div>
-                </div>
-              </div>
-              <Button variant="secondary" className="w-full bg-slate-800 text-white hover:bg-slate-700" onClick={loginPlanner} disabled={busy !== null}>
-                {busy === 'planner' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Continue as Project Planner
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+          {selectedRole === 'supervisor' && (
+            <div className="w-full max-w-md">
+              <button 
+                onClick={() => setSelectedRole(null)}
+                className="mb-3 flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                &larr; Back to role selection
+              </button>
+              <Card className="overflow-hidden border-slate-200 shadow-sm">
+                <CardHeader className="bg-slate-900 pb-4 text-white">
+                  <div className="flex items-center gap-2">
+                    <HardHat className="h-5 w-5 text-amber-400" />
+                    <CardTitle className="text-base">Supervisor</CardTitle>
+                  </div>
+                  <CardDescription className="text-slate-300">
+                    Just tell us what happened.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Demo profile
+                    </label>
+                    <Select value={selectedSupervisor} onValueChange={setSelectedSupervisor}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select supervisor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supervisors.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.name} — {s.role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button className="w-full" onClick={loginSupervisor} disabled={busy !== null || !selectedSupervisor}>
+                    {busy === 'supervisor' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Continue as Supervisor
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {selectedRole === 'planner' && (
+            <div className="w-full max-w-md">
+              <button 
+                onClick={() => setSelectedRole(null)}
+                className="mb-3 flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                &larr; Back to role selection
+              </button>
+              <Card className="overflow-hidden border-slate-200 shadow-sm">
+                <CardHeader className="bg-slate-800 pb-4 text-white">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList className="h-5 w-5 text-amber-400" />
+                    <CardTitle className="text-base">Project Planner</CardTitle>
+                  </div>
+                  <CardDescription className="text-slate-300">
+                    Review decisions, not raw reports.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      Demo profile
+                    </label>
+                    <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm">
+                      <div className="font-medium text-slate-800">Arun Sharma</div>
+                      <div className="text-xs text-slate-500">Project Planner — Unit-4 Expansion Project</div>
+                    </div>
+                  </div>
+                  <Button variant="secondary" className="w-full bg-slate-800 text-white hover:bg-slate-700" onClick={loginPlanner} disabled={busy !== null}>
+                    {busy === 'planner' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Continue as Project Planner
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
 
         {error && (
