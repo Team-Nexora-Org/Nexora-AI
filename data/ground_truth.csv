@@ -1,0 +1,26 @@
+id,raw_text,ground_truth_activity_id,expected_decision
+GT-001,Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.,A10931,HIGH_CONFIDENCE
+GT-002,24-XX spool fixed and erection finished.,A10931,HIGH_CONFIDENCE
+GT-003,Piping team completed erection of the 24-XX spool.,A10931,HIGH_CONFIDENCE
+GT-004,24-XX ka spool erect kar diya hai.,A10931,HIGH_CONFIDENCE
+GT-005,Line 25-XX ka spool erection complete hai.,A10932,HIGH_CONFIDENCE
+GT-006,Hydrotest on Line 24-XX finished on 2nd September.,A10933,HIGH_CONFIDENCE
+GT-007,Foundation F-102 concrete casting completed on 30 August.,A20418,HIGH_CONFIDENCE
+GT-008,Rebar for foundation F-103 placed and checked.,A20423,HIGH_CONFIDENCE
+GT-009,Cable trench T-11 excavation done.,A20420,HIGH_CONFIDENCE
+GT-010,Backfilling of trench T-12 completed on 31 August.,A20427,HIGH_CONFIDENCE
+GT-011,Cable tray installation started in compressor area on 29 August.,A30512,HIGH_CONFIDENCE
+GT-012,"Cables pulled through tray C-18, completed 5 September.",A30515,HIGH_CONFIDENCE
+GT-013,Earthing grid installation in Unit 2 finished.,A30522,HIGH_CONFIDENCE
+GT-014,Welding on Line 25-XX completed on 29 August.,A10936,HIGH_CONFIDENCE
+GT-015,Pipe support P-201 installed.,A10937,HIGH_CONFIDENCE
+GT-016,Insulation on Line 24-XX completed.,A10941,HIGH_CONFIDENCE
+GT-017,Line 30-XX ka spool erection ho gaya.,A10942,HIGH_CONFIDENCE
+GT-018,Concrete pedestal P-51 cast.,A20424,HIGH_CONFIDENCE
+GT-019,Lighting panel LP-2 installed in Unit 2.,A30517,HIGH_CONFIDENCE
+GT-020,Hydrotest of Line 25-XX done.,A10934,HIGH_CONFIDENCE
+GT-021,Pipe work completed.,AMBIGUOUS,NEEDS_REVIEW
+GT-022,Welding completed in Unit 2.,AMBIGUOUS,NEEDS_REVIEW
+GT-023,Cable work finished.,AMBIGUOUS,NEEDS_REVIEW
+GT-024,New drainage trench completed near Unit 4.,UNMATCHED,UNMATCHED
+GT-025,Security cabin foundation cast near main gate.,UNMATCHED,UNMATCHED

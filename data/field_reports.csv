@@ -1,0 +1,26 @@
+id,supervisor,discipline,input_type,raw_text,ground_truth_activity_id,ground_truth_start,ground_truth_finish,ground_truth_status
+GT-001,Ramesh Kumar,Piping,text,Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.,A10931,2026-08-29,2026-08-31,Completed
+GT-002,Ramesh Kumar,Piping,text,24-XX spool fixed and erection finished.,A10931,,,Completed
+GT-003,Ramesh Kumar,Piping,text,Piping team completed erection of the 24-XX spool.,A10931,,,Completed
+GT-004,Ramesh Kumar,Piping,text,24-XX ka spool erect kar diya hai.,A10931,,,Completed
+GT-005,Ramesh Kumar,Piping,voice,Line 25-XX ka spool erection complete hai.,A10932,,,Completed
+GT-006,Ramesh Kumar,Piping,text,Hydrotest on Line 24-XX finished on 2nd September.,A10933,,2026-09-02,Completed
+GT-007,Amit Verma,Civil,text,Foundation F-102 concrete casting completed on 30 August.,A20418,,2026-08-30,Completed
+GT-008,Amit Verma,Civil,text,Rebar for foundation F-103 placed and checked.,A20423,,,Completed
+GT-009,Amit Verma,Civil,text,Cable trench T-11 excavation done.,A20420,,,Completed
+GT-010,Amit Verma,Civil,text,Backfilling of trench T-12 completed on 31 August.,A20427,,2026-08-31,Completed
+GT-011,Suresh Singh,Electrical,voice,Cable tray installation started in compressor area on 29 August.,A30512,2026-08-29,,In Progress
+GT-012,Suresh Singh,Electrical,text,"Cables pulled through tray C-18, completed 5 September.",A30515,,2026-09-05,Completed
+GT-013,Suresh Singh,Electrical,text,Earthing grid installation in Unit 2 finished.,A30522,,,Completed
+GT-014,Ramesh Kumar,Piping,text,Welding on Line 25-XX completed on 29 August.,A10936,,2026-08-29,Completed
+GT-015,Ramesh Kumar,Piping,text,Pipe support P-201 installed.,A10937,,,Completed
+GT-016,Ramesh Kumar,Piping,text,Insulation on Line 24-XX completed.,A10941,,,Completed
+GT-017,Ramesh Kumar,Piping,text,Line 30-XX ka spool erection ho gaya.,A10942,,,Completed
+GT-018,Amit Verma,Civil,text,Concrete pedestal P-51 cast.,A20424,,,Completed
+GT-019,Suresh Singh,Electrical,text,Lighting panel LP-2 installed in Unit 2.,A30517,,,Completed
+GT-020,Ramesh Kumar,Piping,text,Hydrotest of Line 25-XX done.,A10934,,,Completed
+GT-021,Ramesh Kumar,Piping,text,Pipe work completed.,AMBIGUOUS,,,Completed
+GT-022,Ramesh Kumar,Piping,text,Welding completed in Unit 2.,AMBIGUOUS,,,Completed
+GT-023,Suresh Singh,Electrical,text,Cable work finished.,AMBIGUOUS,,,Completed
+GT-024,Amit Verma,Civil,text,New drainage trench completed near Unit 4.,UNMATCHED,,,Completed
+GT-025,Amit Verma,Civil,text,Security cabin foundation cast near main gate.,UNMATCHED,,,Completed

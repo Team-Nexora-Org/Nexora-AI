@@ -1,0 +1,76 @@
+activity_id,wbs,discipline,location,activity_name,work_type,identifier,planned_start,planned_finish
+A10931,PIP-03,Piping,Unit 2,Erect Spool Line 24-XX,Spool Erection,Line 24-XX,2026-08-28,2026-08-30
+A10932,PIP-03,Piping,Unit 2,Erect Spool Line 25-XX,Spool Erection,Line 25-XX,2026-08-29,2026-08-31
+A10933,PIP-03,Piping,Unit 2,Hydrotest Line 24-XX,Hydrotest,Line 24-XX,2026-09-01,2026-09-02
+A10934,PIP-03,Piping,Unit 2,Hydrotest Line 25-XX,Hydrotest,Line 25-XX,2026-09-03,2026-09-04
+A10935,PIP-03,Piping,Unit 2,Welding Line 24-XX,Welding,Line 24-XX,2026-08-26,2026-08-28
+A10936,PIP-03,Piping,Unit 2,Welding Line 25-XX,Welding,Line 25-XX,2026-08-27,2026-08-29
+A10937,PIP-03,Piping,Unit 2,Install Pipe Support P-201,Pipe Support,P-201,2026-09-02,2026-09-03
+A10938,PIP-03,Piping,Unit 2,Install Pipe Support P-202,Pipe Support,P-202,2026-09-03,2026-09-05
+A10939,PIP-03,Piping,Unit 2,Erect Spool Line 26-XX,Spool Erection,Line 26-XX,2026-09-05,2026-09-07
+A10940,PIP-03,Piping,Unit 2,Painting Line 24-XX,Painting,Line 24-XX,2026-09-06,2026-09-07
+A10941,PIP-03,Piping,Unit 2,Insulation Line 24-XX,Insulation,Line 24-XX,2026-09-08,2026-09-10
+A10942,PIP-04,Piping,Unit 3,Erect Spool Line 30-XX,Spool Erection,Line 30-XX,2026-08-30,2026-09-01
+A10943,PIP-04,Piping,Unit 3,Welding Line 30-XX,Welding,Line 30-XX,2026-09-01,2026-09-03
+A10944,PIP-04,Piping,Unit 3,Hydrotest Line 30-XX,Hydrotest,Line 30-XX,2026-09-04,2026-09-05
+A10945,PIP-04,Piping,Unit 3,Install Pipe Support P-301,Pipe Support,P-301,2026-09-05,2026-09-06
+A20418,CIV-02,Civil,Unit 1,Cast Foundation F-102,Concrete,Foundation F-102,2026-08-27,2026-08-30
+A20419,CIV-02,Civil,Unit 1,Cast Foundation F-103,Concrete,Foundation F-103,2026-08-28,2026-08-31
+A20420,CIV-02,Civil,Unit 1,Excavation Trench T-11,Excavation,Trench T-11,2026-08-25,2026-08-27
+A20421,CIV-02,Civil,Unit 1,Excavation Trench T-12,Excavation,Trench T-12,2026-08-26,2026-08-28
+A20422,CIV-02,Civil,Unit 1,Rebar Foundation F-102,Rebar,Foundation F-102,2026-08-24,2026-08-26
+A20423,CIV-02,Civil,Unit 1,Rebar Foundation F-103,Rebar,Foundation F-103,2026-08-25,2026-08-27
+A20424,CIV-02,Civil,Unit 1,Concrete Pedestal P-51,Concrete,Pedestal P-51,2026-09-01,2026-09-02
+A20425,CIV-02,Civil,Unit 1,Concrete Pedestal P-52,Concrete,Pedestal P-52,2026-09-02,2026-09-03
+A20426,CIV-02,Civil,Unit 1,Backfill Trench T-11,Backfill,Trench T-11,2026-08-29,2026-08-30
+A20427,CIV-02,Civil,Unit 1,Backfill Trench T-12,Backfill,Trench T-12,2026-08-30,2026-08-31
+A20428,CIV-03,Civil,Unit 4,Cast Foundation F-201,Concrete,Foundation F-201,2026-09-01,2026-09-04
+A20429,CIV-03,Civil,Unit 4,Excavation Storm Culvert SC-1,Excavation,Storm Culvert SC-1,2026-08-20,2026-08-24
+A20430,CIV-03,Civil,Unit 4,Rebar Pedestal P-70,Rebar,Pedestal P-70,2026-09-04,2026-09-06
+A20431,CIV-03,Civil,Unit 4,Concrete Curb C-15,Curb,Curb C-15,2026-09-05,2026-09-07
+A20432,CIV-03,Civil,Unit 4,Backfill Storm Culvert SC-1,Backfill,Storm Culvert SC-1,2026-08-25,2026-08-26
+A30512,ELE-04,Electrical,Compressor Area,Install Cable Tray C-17,Cable Tray,Cable Tray C-17,2026-08-29,2026-09-01
+A30513,ELE-04,Electrical,Compressor Area,Install Cable Tray C-18,Cable Tray,Cable Tray C-18,2026-08-30,2026-09-02
+A30514,ELE-04,Electrical,Compressor Area,Cable Pulling CT-17,Cable Pulling,Cable Tray C-17,2026-09-02,2026-09-04
+A30515,ELE-04,Electrical,Compressor Area,Cable Pulling CT-18,Cable Pulling,Cable Tray C-18,2026-09-03,2026-09-05
+A30516,ELE-04,Electrical,Unit 2,Install Lighting Panel LP-1,Lighting Panel,Lighting Panel LP-1,2026-09-01,2026-09-03
+A30517,ELE-04,Electrical,Unit 2,Install Lighting Panel LP-2,Lighting Panel,Lighting Panel LP-2,2026-09-02,2026-09-04
+A30518,ELE-04,Electrical,Unit 2,Cable Pulling LP-1,Cable Pulling,Lighting Panel LP-1,2026-09-04,2026-09-06
+A30519,ELE-04,Electrical,Unit 3,Install Cable Tray C-21,Cable Tray,Cable Tray C-21,2026-09-05,2026-09-07
+A30520,ELE-04,Electrical,Unit 3,Cable Pulling CT-21,Cable Pulling,Cable Tray C-21,2026-09-07,2026-09-09
+A30521,ELE-04,Electrical,Compressor Area,Termination Panel P-9,Termination,Panel P-9,2026-09-06,2026-09-08
+A30522,ELE-04,Electrical,Unit 2,Earthing Grid Install,Earthing,Earthing Grid,2026-09-08,2026-09-10
+A30523,ELE-04,Electrical,Unit 3,Earthing Grid Install,Earthing,Earthing Grid,2026-09-09,2026-09-11
+A30524,ELE-04,Electrical,Compressor Area,Megger Test CT-17,Megger Test,Cable Tray C-17,2026-09-09,2026-09-10
+A30525,ELE-04,Electrical,Unit 2,Install Junction Box JB-3,Junction Box,Junction Box JB-3,2026-09-10,2026-09-12
+A30526,ELE-04,Electrical,Unit 2,Install Motor Control Center,Motor Control Center,Motor Control Center,2026-09-11,2026-09-14
+A40601,MEC-05,Mechanical,Unit 2,Install Pump P-101,Equipment Installation,Pump P-101,2026-08-28,2026-09-01
+A40602,MEC-05,Mechanical,Unit 2,Install Pump P-102,Equipment Installation,Pump P-102,2026-08-29,2026-09-02
+A40603,MEC-05,Mechanical,Unit 2,Align Pump P-101,Alignment,Pump P-101,2026-09-02,2026-09-03
+A40604,MEC-05,Mechanical,Unit 2,Align Pump P-102,Alignment,Pump P-102,2026-09-03,2026-09-04
+A40605,MEC-05,Mechanical,Compressor Area,Install Compressor C-1,Equipment Installation,Compressor C-1,2026-09-01,2026-09-05
+A40606,MEC-05,Mechanical,Compressor Area,Align Compressor C-1,Alignment,Compressor C-1,2026-09-05,2026-09-06
+A40607,MEC-05,Mechanical,Unit 2,Install Heat Exchanger E-1,Equipment Installation,Heat Exchanger E-1,2026-09-03,2026-09-07
+A40608,MEC-05,Mechanical,Unit 2,Install Heat Exchanger E-2,Equipment Installation,Heat Exchanger E-2,2026-09-04,2026-09-08
+A40609,MEC-05,Mechanical,Unit 3,Install Pump P-201,Equipment Installation,Pump P-201,2026-09-06,2026-09-09
+A40610,MEC-05,Mechanical,Unit 3,Align Pump P-201,Alignment,Pump P-201,2026-09-09,2026-09-10
+A40611,MEC-05,Mechanical,Unit 3,Install Vessel V-5,Equipment Installation,Vessel V-5,2026-09-08,2026-09-12
+A40612,MEC-05,Mechanical,Unit 2,Install Valve V-301,Valve Installation,Valve V-301,2026-09-06,2026-09-07
+A40613,MEC-05,Mechanical,Unit 2,Install Valve V-302,Valve Installation,Valve V-302,2026-09-07,2026-09-08
+A40614,MEC-05,Mechanical,Compressor Area,Install Compressor C-2,Equipment Installation,Compressor C-2,2026-09-08,2026-09-12
+A40615,MEC-05,Mechanical,Unit 2,Grouting Pump Base P-101,Grouting,Pump P-101,2026-09-04,2026-09-05
+A50701,INS-06,Instrumentation,Unit 2,Install Temperature Transmitter TT-101,Instrument Installation,Transmitter TT-101,2026-09-05,2026-09-06
+A50702,INS-06,Instrumentation,Unit 2,Install Pressure Transmitter PT-101,Instrument Installation,Transmitter PT-101,2026-09-06,2026-09-07
+A50703,INS-06,Instrumentation,Unit 2,Install Flow Transmitter FT-101,Instrument Installation,Transmitter FT-101,2026-09-07,2026-09-08
+A50704,INS-06,Instrumentation,Unit 2,Calibrate TT-101,Calibration,Transmitter TT-101,2026-09-08,2026-09-09
+A50705,INS-06,Instrumentation,Unit 2,Calibrate PT-101,Calibration,Transmitter PT-101,2026-09-09,2026-09-10
+A50706,INS-06,Instrumentation,Compressor Area,Install Level Switch LS-7,Instrument Installation,Level Switch LS-7,2026-09-06,2026-09-07
+A50707,INS-06,Instrumentation,Compressor Area,Install Level Switch LS-8,Instrument Installation,Level Switch LS-8,2026-09-07,2026-09-08
+A50708,INS-06,Instrumentation,Unit 3,Install Temperature Transmitter TT-201,Instrument Installation,Transmitter TT-201,2026-09-09,2026-09-10
+A50709,INS-06,Instrumentation,Unit 3,Install Pressure Transmitter PT-201,Instrument Installation,Transmitter PT-201,2026-09-11,2026-09-12
+A50710,INS-06,Instrumentation,Unit 2,Loop Test LT-101,Loop Test,Loop LT-101,2026-09-10,2026-09-11
+A50711,INS-06,Instrumentation,Unit 2,Loop Test LT-102,Loop Test,Loop LT-102,2026-09-11,2026-09-12
+A50712,INS-06,Instrumentation,Compressor Area,Install Control Valve CV-1,Control Valve,Control Valve CV-1,2026-09-08,2026-09-10
+A50713,INS-06,Instrumentation,Compressor Area,Install Control Valve CV-2,Control Valve,Control Valve CV-2,2026-09-10,2026-09-12
+A50714,INS-06,Instrumentation,Unit 2,Install Junction Box JBI-3,Instrument Installation,Junction Box JBI-3,2026-09-12,2026-09-13
+A50715,INS-06,Instrumentation,Unit 3,Calibrate TT-201,Calibration,Transmitter TT-201,2026-09-13,2026-09-14

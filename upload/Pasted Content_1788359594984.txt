@@ -1,0 +1,2366 @@
+NEXORA — SIH26122
+
+Intelligent Field-to-Schedule Execution Intelligence Platform
+
+MASTER BUILD SPECIFICATION — HACKATHON MVP
+
+You are the lead senior full-stack engineer, AI product engineer, UX engineer, and technical architect responsible for building the complete NEXORA MVP.
+
+This is a time-critical Smart India Hackathon prototype.
+
+You must prioritize:
+
+1. End-to-end functionality
+2. AI/ML credibility
+3. Realistic project workflow
+4. Excellent UX
+5. Reliable demo behavior
+6. Clean maintainable code
+7. Easy Supabase configuration
+8. Easy Vercel deployment
+9. Zero unnecessary infrastructure
+10. No speculative features
+
+Do NOT build a generic project-management dashboard.
+
+Do NOT build a generic chatbot.
+
+Do NOT create a superficial Gemini wrapper.
+
+The central product capability is:
+
+FIELD REALITY → AI UNDERSTANDING → EXECUTION EVENT → L5/L6 SCHEDULE RESOLUTION → CONFIDENCE + EVIDENCE → HUMAN VALIDATION → TRUSTED SCHEDULE UPDATE → EXECUTION INTELLIGENCE
+
+The prototype must make this workflow visually and technically obvious.
+
+⸻
+
+1. PROBLEM CONTEXT
+
+Real infrastructure projects already have structured project schedules in systems such as Primavera P6, Microsoft Project, or other PMIS platforms.
+
+The project schedule contains planned L5/L6 activities.
+
+However, actual execution information is distributed across multiple supervisors and disciplines.
+
+Examples:
+
+* Piping supervisor
+* Civil supervisor
+* Mechanical supervisor
+* Electrical supervisor
+* Instrumentation supervisor
+
+They may report through:
+
+* Voice
+* Text
+* Daily progress reports
+* Excel
+* Site diaries
+* PDFs
+* Photos
+
+The terminology used by the field does not necessarily match the terminology used by the schedule.
+
+Example:
+
+Schedule:
+
+“A10931 — Erect Spool Line 24-XX”
+
+Field:
+
+“Line 24-XX ka spool erection complete hai.”
+
+Another:
+
+“24-XX spool fixed and erection finished.”
+
+Another:
+
+“Piping team completed erection of the 24-XX spool.”
+
+These statements can represent the same planned activity.
+
+The problem is therefore not merely data entry.
+
+The core problem is:
+
+HETEROGENEOUS FIELD EXECUTION DATA MUST BE INTERPRETED AND RECONCILED AGAINST STRUCTURED L5/L6 PROJECT SCHEDULE ACTIVITIES.
+
+The planner should not have to manually read every report, determine what happened, find the corresponding schedule activity, calculate progress, and update the schedule from scratch.
+
+NEXORA is the intelligent reconciliation layer between field execution and the existing project schedule.
+
+⸻
+
+2. PRODUCT POSITIONING
+
+Use these principles throughout the application.
+
+Primary positioning:
+
+From Field Reality → Trusted Schedule Intelligence
+
+Core statement:
+
+The project schedule knows what was planned. The field knows what actually happened. NEXORA is the intelligent bridge between them.
+
+Supervisor experience:
+
+“Just tell us what happened.”
+
+Planner experience:
+
+“Review decisions, not raw reports.”
+
+Responsible AI principle:
+
+“AI can be wrong. AI must never silently cause a wrong schedule update.”
+
+Do NOT position NEXORA as replacing Primavera/MS Project.
+
+The prototype uses a seeded/imported representative schedule.
+
+Production concept:
+
+Primavera / MS Project / PMIS → integration adapter → NEXORA → approved actual progress → PMIS.
+
+⸻
+
+3. APPLICATION MODEL
+
+Build ONE Next.js application.
+
+There are two roles:
+
+ROLE A — SUPERVISOR
+
+Example:
+
+Ramesh Kumar — Piping Supervisor
+
+The supervisor should NOT need to understand:
+
+* WBS codes
+* activity IDs
+* Primavera
+* schedule terminology
+
+He simply reports what happened.
+
+ROLE B — PROJECT MANAGER / PLANNER
+
+Example:
+
+Sharma — Project Planner
+
+The planner sees:
+
+* incoming execution reports
+* extracted events
+* suggested schedule activities
+* confidence
+* supporting evidence
+* alternative candidates
+* planned vs actual
+* variance
+* approval controls
+* audit trail
+* execution intelligence
+
+⸻
+
+4. MOCK AUTHENTICATION
+
+DO NOT implement Firebase/Auth0/etc.
+
+For the MVP use mock authentication.
+
+Create a polished login screen:
+
+NEXORA
+
+“Field-to-Schedule Execution Intelligence”
+
+Two demo users:
+
+Supervisor
+
+Name:
+Ramesh Kumar
+
+Role:
+Piping Supervisor
+
+Credentials can simply be a selectable demo profile.
+
+Planner
+
+Name:
+Arun Sharma
+
+Role:
+Project Planner
+
+Provide:
+
+[Continue as Supervisor]
+
+[Continue as Project Planner]
+
+Persist the selected role using a simple client-side mechanism such as cookie/localStorage.
+
+The architecture must make it easy to replace this with Supabase Auth later.
+
+Do not spend significant time on authentication.
+
+⸻
+
+5. REQUIRED APPLICATION ROUTES
+
+Use Next.js App Router.
+
+Suggested routes:
+
+/
+
+/login
+
+/supervisor
+
+/supervisor/report
+
+/supervisor/submissions
+
+/planner
+
+/planner/inbox
+
+/planner/review/[id]
+
+/planner/activities
+
+/planner/intelligence
+
+/planner/audit
+
+Keep routing simple.
+
+Protect role-specific pages at the UI/application level.
+
+⸻
+
+6. SUPERVISOR EXPERIENCE
+
+The supervisor landing page must be extremely simple.
+
+Headline:
+
+What happened today?
+
+Subheadline:
+
+Tell NEXORA. We’ll connect it to the project schedule.
+
+Primary actions:
+
+[ Speak ]
+
+[ Write ]
+
+[ Upload Report ]
+
+Do not create a complicated form.
+
+⸻
+
+7. SUPERVISOR TEXT FLOW
+
+Allow the supervisor to enter natural language.
+
+Example:
+
+“Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.”
+
+When submitted:
+
+Show a processing state:
+
+“Understanding field report…”
+
+“Extracting execution event…”
+
+“Finding matching schedule activity…”
+
+Then show:
+
+I understood
+
+Discipline:
+Piping
+
+Work Type:
+Spool Erection
+
+Identifier:
+Line 24-XX
+
+Actual Start:
+29 Aug 2026
+
+Actual Finish:
+31 Aug 2026
+
+Status:
+Completed
+
+Evidence:
+Highlight the relevant source text.
+
+Buttons:
+
+[Confirm & Submit]
+
+[Edit]
+
+⸻
+
+8. VOICE EXPERIENCE
+
+Implement browser audio recording if practical.
+
+Use MediaRecorder where supported.
+
+Create a storage abstraction so that audio can later be uploaded to Supabase Storage or another object storage provider.
+
+Do NOT hard-wire the entire application to Cloudinary.
+
+Create:
+
+lib/storage/
+
+with a provider abstraction.
+
+For the prototype, if transcription configuration is unavailable, support:
+
+DEMO_TRANSCRIPT_MODE=true
+
+In demo transcript mode, selecting Speak can use a realistic predefined transcript.
+
+IMPORTANT:
+
+Do not fake the AI resolution.
+
+The field-to-schedule intelligence must remain real.
+
+Voice transport can be mocked if necessary.
+
+The UI should make it clear that the prototype supports voice/transcript input.
+
+⸻
+
+9. FILE UPLOAD
+
+Support at minimum:
+
+.xlsx
+.csv
+.txt
+.pdf
+
+The system should distinguish:
+
+input_type:
+
+voice
+text
+excel
+csv
+pdf
+
+For the MVP:
+
+* Excel/CSV should actually be parsed.
+* Text should actually be processed.
+* PDF can use text extraction where practical.
+* OCR should be optional and must not block the application.
+
+Create a clean ingestion abstraction.
+
+Do not spend hours implementing production OCR.
+
+⸻
+
+10. PLANNER EXPERIENCE
+
+The planner’s primary screen is NOT a generic dashboard.
+
+It is:
+
+AI Resolution Workspace
+
+Top summary:
+
+Incoming Reports
+14
+
+AI Resolved
+10
+
+Needs Review
+3
+
+Unmatched
+1
+
+Then show execution cards.
+
+Each card must contain:
+
+Supervisor
+
+Discipline
+
+Original field statement
+
+Extracted execution event
+
+Suggested activity
+
+Confidence
+
+Why this match?
+
+Planned vs actual
+
+Variance
+
+Actions
+
+⸻
+
+11. PLANNER RESOLUTION CARD
+
+Example:
+
+FIELD REPORT
+
+“Piping supervisor:
+Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.”
+
+AI EXTRACTED:
+
+Piping
+Spool Erection
+Line 24-XX
+29 Aug → 31 Aug
+Completed
+
+SUGGESTED ACTIVITY:
+
+A10931
+
+Erect Spool Line 24-XX
+
+CONFIDENCE:
+
+94 — High
+
+WHY THIS MATCH?
+
+✓ Identifier match
+✓ Discipline match
+✓ Work type match
+✓ Location/context match
+✓ Date consistency
+
+PLANNED:
+
+28 Aug → 30 Aug
+
+ACTUAL:
+
+29 Aug → 31 Aug
+
+VARIANCE:
+
++1 day
+
+Actions:
+
+[Approve & Update]
+
+[Change Match]
+
+[Reject]
+
+⸻
+
+12. APPROVE WORKFLOW
+
+When planner clicks:
+
+Approve & Update
+
+The application must actually update the database.
+
+Before:
+
+Activity:
+A10931
+
+Status:
+Not Started
+
+Actual Finish:
+NULL
+
+After:
+
+Activity:
+A10931
+
+Status:
+Completed
+
+Actual Finish:
+2026-08-31
+
+Also create an audit record.
+
+Show a success state:
+
+✓ Schedule updated
+
+A10931 — Erect Spool Line 24-XX
+
+Actual finish:
+31 Aug 2026
+
+Then show:
+
+“Approved by Arun Sharma”
+
+⸻
+
+13. CHANGE MATCH WORKFLOW
+
+If planner clicks:
+
+Change Match
+
+Show the top candidate activities.
+
+Allow selecting another activity.
+
+When selected:
+
+Save:
+
+AI suggested:
+A10931
+
+Planner selected:
+A10932
+
+Decision:
+Human corrected
+
+This is important because human corrections become valuable labelled feedback for future model improvement.
+
+Do not claim that the model automatically retrains.
+
+⸻
+
+14. REJECT WORKFLOW
+
+Planner can reject an extracted event.
+
+Save:
+
+decision = REJECTED
+
+Reason field optional.
+
+Create audit event.
+
+⸻
+
+15. AMBIGUOUS AI BEHAVIOR
+
+This is a REQUIRED WOW feature.
+
+Create a deliberately ambiguous report:
+
+“Pipe work completed.”
+
+The system should NOT automatically update a schedule activity.
+
+Show:
+
+⚠ NEEDS REVIEW
+
+Multiple plausible activities found.
+
+Example:
+
+A10931 — Erect Spool Line 24-XX
+84
+
+A10942 — Install Pipe Support
+82
+
+A10956 — Hydrotest Line 24-XX
+78
+
+Show:
+
+“Insufficient evidence for automatic resolution.”
+
+This is intentional.
+
+The product optimizes for trustworthy automation, not maximum automation.
+
+Button:
+
+[Review Candidates]
+
+⸻
+
+16. UNMATCHED BEHAVIOR
+
+Create a report that has no corresponding schedule activity.
+
+Example:
+
+“New drainage trench completed near Unit 4.”
+
+Show:
+
+NO RELIABLE MATCH
+
+The system must not force the event into an unrelated schedule activity.
+
+Show:
+
+Possible reason:
+“No sufficiently similar planned activity found.”
+
+Actions:
+
+[Create Review Item]
+
+[Dismiss]
+
+This demonstrates that information is not silently discarded.
+
+⸻
+
+17. AI/ML CORE
+
+THIS IS THE MOST IMPORTANT TECHNICAL REQUIREMENT.
+
+Do NOT implement:
+
+field report → Gemini → activity ID
+
+That would look like a generic LLM wrapper.
+
+Implement a multi-stage resolution pipeline.
+
+Required conceptual flow:
+
+FIELD REPORT
+
+↓
+
+STRUCTURED EVENT EXTRACTION
+
+↓
+
+NORMALIZATION
+
+↓
+
+CANDIDATE RETRIEVAL
+
+↓
+
+SEMANTIC SIMILARITY
+
+↓
+
+CONTEXTUAL SCORING
+
+↓
+
+RERANKING
+
+↓
+
+CONFIDENCE + CANDIDATE MARGIN
+
+↓
+
+HIGH CONFIDENCE / NEEDS REVIEW / UNMATCHED
+
+⸻
+
+18. STRUCTURED EXTRACTION
+
+Use an LLM only for extracting structured information from natural language.
+
+Required schema:
+
+{
+discipline,
+work_type,
+identifier,
+location,
+actual_start,
+actual_finish,
+status,
+quantity,
+unit,
+evidence
+}
+
+The LLM must NOT invent schedule activity IDs.
+
+Dates must be normalized to ISO format.
+
+If a field is unavailable, return null.
+
+Never fabricate missing information.
+
+⸻
+
+19. NORMALIZATION
+
+Create domain terminology normalization.
+
+Examples:
+
+“spool erected”
+“spool erection complete”
+“spool installed”
+“erection finished”
+“spool fixed”
+
+→
+
+SPOOL_ERECTION
+
+Likewise create mappings for:
+
+Civil
+Concrete
+Foundation
+Rebar
+Excavation
+Mechanical
+Equipment Installation
+Alignment
+Piping
+Spool Erection
+Welding
+Hydrotest
+Electrical
+Cable Tray
+Cable Pulling
+Instrumentation
+Instrument Installation
+Testing
+
+The normalization layer must be deterministic where possible.
+
+⸻
+
+20. SCHEDULE REPRESENTATION
+
+Represent every schedule activity using a searchable text representation.
+
+Example:
+
+Piping | PIP-03 | Unit 2 | Spool Erection | Line 24-XX | Erect Spool Line 24-XX
+
+Generate an embedding for this representation.
+
+Generate an embedding for the normalized execution event.
+
+Perform semantic similarity.
+
+Preferred implementation:
+
+PostgreSQL + pgvector if it can be configured quickly.
+
+If pgvector becomes a blocker, use an in-memory vector index for the prototype while PostgreSQL remains the source of truth.
+
+Do NOT spend hours debugging vector infrastructure.
+
+⸻
+
+21. CANDIDATE RETRIEVAL
+
+For every execution event:
+
+1. Extract identifier.
+2. Filter by discipline where available.
+3. Filter by relevant project/WBS where available.
+4. Retrieve semantically similar schedule activities.
+5. Return top K candidates.
+
+Default:
+
+K = 5
+
+The application must show candidate rankings internally.
+
+⸻
+
+22. CONTEXTUAL MATCHING
+
+Combine multiple signals.
+
+Recommended score:
+
+Identifier:
+40%
+
+Discipline:
+20%
+
+Work Type:
+20%
+
+Semantic similarity:
+15%
+
+Date/location consistency:
+5%
+
+Make weights configurable.
+
+Do not pretend these weights are scientifically optimal.
+
+They are prototype decision weights.
+
+⸻
+
+23. CONFIDENCE AND AMBIGUITY
+
+Do NOT use an LLM-generated confidence number.
+
+Calculate a resolution score from actual signals.
+
+Also calculate:
+
+candidate_margin =
+top_score - second_best_score
+
+Example:
+
+Top:
+94
+
+Second:
+61
+
+→ HIGH CONFIDENCE
+
+Example:
+
+Top:
+84
+
+Second:
+82
+
+→ NEEDS REVIEW
+
+Implement thresholds as configuration.
+
+Example:
+
+HIGH_CONFIDENCE_THRESHOLD=0.85
+
+AMBIGUITY_MARGIN_THRESHOLD=0.08
+
+Adjust according to the actual scoring scale.
+
+Never silently auto-update if confidence is below the threshold.
+
+⸻
+
+24. AI RESULT CONTRACT
+
+The AI service should return something conceptually like:
+
+{
+“execution_event”: {
+“discipline”: “Piping”,
+“work_type”: “Spool Erection”,
+“identifier”: “Line 24-XX”,
+“location”: “Unit 2”,
+“actual_start”: “2026-08-29”,
+“actual_finish”: “2026-08-31”,
+“status”: “Completed”,
+“evidence”: “…”
+},
+
+“candidates”: [
+{
+“activity_id”: “A10931”,
+“score”: 0.94,
+“signals”: {
+“identifier”: 1,
+“discipline”: 1,
+“work_type”: 1,
+“semantic”: 0.91,
+“date”: 1
+}
+}
+],
+
+“selected_activity_id”: “A10931”,
+
+“decision”: “HIGH_CONFIDENCE”,
+
+“explanation”: [
+“Line identifier matches”,
+“Discipline matches”,
+“Work type matches”,
+“Semantic similarity is high”,
+“Date context is consistent”
+]
+}
+
+⸻
+
+25. EVALUATION MODE
+
+Create an evaluation script.
+
+The repository must contain:
+
+/data/schedule.csv
+
+/data/field_reports.csv
+
+/data/ground_truth.csv
+
+/scripts/evaluate-matching.*
+
+The evaluation should compare:
+
+BASELINE:
+keyword/fuzzy matching
+
+VERSUS:
+
+NEXORA:
+semantic retrieval + contextual scoring
+
+Measure:
+
+* Top-1 accuracy
+* Top-3 recall
+* High-confidence precision
+* False auto-link rate
+* Ambiguous detection
+* Unmatched detection
+
+Do NOT fabricate results.
+
+If evaluation is run, store the generated metrics in:
+
+/data/evaluation-results.json
+
+Also expose a simple “Model Evaluation” section in the planner application if practical.
+
+⸻
+
+26. SYNTHETIC PROJECT DATASET
+
+Create a realistic synthetic project.
+
+Project:
+
+“Unit-4 Expansion Project”
+
+Disciplines:
+
+Civil
+Mechanical
+Piping
+Electrical
+Instrumentation
+
+Create approximately 75 schedule activities.
+
+Use realistic WBS/activity structures.
+
+Example:
+
+A10931
+PIP-03
+Piping
+Unit 2
+Erect Spool Line 24-XX
+2026-08-28
+2026-08-30
+
+A10932
+PIP-03
+Piping
+Unit 2
+Erect Spool Line 25-XX
+2026-08-29
+2026-08-31
+
+A10933
+PIP-03
+Piping
+Unit 2
+Hydrotest Line 24-XX
+2026-09-01
+2026-09-02
+
+A20418
+CIV-02
+Civil
+Unit 1
+Cast Foundation F-102
+2026-08-27
+2026-08-30
+
+A30512
+ELE-04
+Electrical
+Compressor Area
+Install Cable Tray C-17
+2026-08-29
+2026-09-01
+
+Create enough similar/distractor activities to make the matching problem realistic.
+
+⸻
+
+27. FIELD REPORT DATASET
+
+Generate approximately 150–300 synthetic field reports.
+
+Each report should contain:
+
+id
+supervisor
+discipline
+date
+input_type
+raw_text
+ground_truth_activity_id
+ground_truth_start
+ground_truth_finish
+ground_truth_status
+
+Create different linguistic variations for the same activity.
+
+Example schedule:
+
+A10931 — Erect Spool Line 24-XX
+
+Reports:
+
+“Line 24-XX spool erection completed.”
+
+“24-XX spool has been erected.”
+
+“Spool for Line 24-XX fixed yesterday.”
+
+“Piping team completed erection of the 24-XX spool.”
+
+“24-XX ka spool erect kar diya hai.”
+
+“Line 24-XX ka spool erection complete hai.”
+
+Also create:
+
+1. Easy matches
+2. Semantic matches
+3. Hard negatives
+4. Ambiguous cases
+5. Unmatched cases
+
+⸻
+
+28. MULTI-SUPERVISOR DEMO DATA
+
+Create at least:
+
+Ramesh Kumar
+Piping Supervisor
+
+Amit Verma
+Civil Supervisor
+
+Suresh Singh
+Electrical Supervisor
+
+Example reports:
+
+Ramesh:
+“Line 24-XX ka spool erection complete hai.”
+
+Amit:
+“Foundation F-102 concrete casting completed.”
+
+Suresh:
+“Cable tray installation started in compressor area.”
+
+The planner should see these arriving as separate execution reports.
+
+This demonstrates that the system is designed for many supervisors and disciplines rather than a single user.
+
+⸻
+
+29. DATABASE
+
+Use Supabase PostgreSQL.
+
+Create tables:
+
+projects
+
+schedule_activities
+
+field_reports
+
+execution_events
+
+activity_matches
+
+planner_decisions
+
+audit_logs
+
+Optional:
+
+model_evaluations
+
+⸻
+
+30. DATABASE FIELDS
+
+schedule_activities:
+
+id
+project_id
+activity_id
+wbs
+discipline
+activity_name
+description
+location
+planned_start
+planned_finish
+actual_start
+actual_finish
+status
+search_text
+embedding
+created_at
+updated_at
+
+field_reports:
+
+id
+project_id
+supervisor_name
+discipline
+input_type
+raw_content
+file_url
+report_date
+created_at
+
+execution_events:
+
+id
+report_id
+discipline
+work_type
+identifier
+location
+actual_start
+actual_finish
+status
+quantity
+unit
+evidence
+created_at
+
+activity_matches:
+
+id
+execution_event_id
+activity_id
+semantic_score
+identifier_score
+discipline_score
+work_type_score
+date_score
+final_score
+candidate_margin
+decision
+explanation
+created_at
+
+planner_decisions:
+
+id
+match_id
+decision
+selected_activity_id
+planner_name
+reason
+created_at
+
+audit_logs:
+
+id
+entity_type
+entity_id
+action
+actor
+metadata
+created_at
+
+⸻
+
+31. SEEDING
+
+Create a seed script:
+
+npm run seed
+
+It must:
+
+1. Create project
+2. Insert schedule activities
+3. Insert supervisors
+4. Insert demo field reports
+5. Insert known expected matching data
+6. Create initial planner inbox
+7. Create ambiguity example
+8. Create unmatched example
+
+The application must be usable immediately after:
+
+npm install
+
+environment configuration
+
+npm run seed
+
+npm run dev
+
+Do not require manual database entry.
+
+⸻
+
+32. DEMO RESET
+
+Create:
+
+npm run demo:reset
+
+This should restore the database to the clean demonstration state.
+
+This is extremely important.
+
+Before the stage demo, the team should be able to reset the entire workflow.
+
+If practical, also expose:
+
+“Reset Demo”
+
+inside a developer/demo-only menu.
+
+⸻
+
+33. DEMO SCENARIOS
+
+Seed these exact scenarios.
+
+SCENARIO 1 — Strong semantic match
+
+Input:
+
+“Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.”
+
+Expected:
+
+A10931
+
+High confidence.
+
+Variance:
++1 day.
+
+⸻
+
+SCENARIO 2 — Terminology variation
+
+Input:
+
+“24-XX spool fixed and erection finished.”
+
+Expected:
+
+A10931.
+
+This demonstrates semantic understanding.
+
+⸻
+
+SCENARIO 3 — Multi-supervisor
+
+Piping + Civil + Electrical reports.
+
+All resolve to different schedule activities.
+
+⸻
+
+SCENARIO 4 — Ambiguous
+
+“Pipe work completed.”
+
+Expected:
+
+Needs Review.
+
+⸻
+
+SCENARIO 5 — Unmatched
+
+“New drainage trench completed near Unit 4.”
+
+Expected:
+
+Unmatched.
+
+⸻
+
+34. EXECUTION INTELLIGENCE
+
+Do not build a huge analytics suite.
+
+Build ONE impressive query.
+
+Planner can select:
+
+“Show activities completed later than planned.”
+
+Return actual database results.
+
+Example:
+
+A10931
+Planned Finish:
+30 Aug
+
+Actual Finish:
+31 Aug
+
+Variance:
++1 day
+
+Also support:
+
+“Which piping activities are delayed?”
+
+This can initially be a controlled query/filter rather than a general natural-language agent.
+
+Do not build a second chatbot.
+
+⸻
+
+35. UI DESIGN
+
+The visual style should communicate:
+
+enterprise infrastructure
+industrial intelligence
+trust
+precision
+modern AI
+
+Avoid:
+
+generic SaaS dashboard
+excessive gradients
+cartoonish AI graphics
+unnecessary glassmorphism
+huge KPI cards everywhere
+
+Use a clean professional design.
+
+Recommended:
+
+* dark navy/charcoal or neutral enterprise palette
+* high contrast
+* restrained accent color
+* clear status colors
+* dense but readable information
+* strong typography
+* subtle transitions
+* excellent empty/loading/success/error states
+
+The UI must prioritize information hierarchy.
+
+⸻
+
+36. WOW MOMENT
+
+The main WOW sequence must be:
+
+1. Supervisor speaks/types naturally.
+2. AI extracts structured execution data.
+3. System searches real seeded schedule data.
+4. AI finds the corresponding L5/L6 activity despite wording differences.
+5. UI explains why.
+6. Confidence appears from actual scoring.
+7. Planned vs actual variance appears.
+8. Planner approves.
+9. Actual schedule data changes.
+10. Audit trail records the action.
+11. An ambiguous report demonstrates that the AI refuses to guess.
+12. Planner asks which activities are delayed.
+13. System answers from the structured execution data.
+
+This sequence is more important than any dashboard.
+
+⸻
+
+37. ARCHITECTURE
+
+Keep implementation simple.
+
+Use:
+
+Next.js
+TypeScript
+Tailwind CSS
+Supabase PostgreSQL
+Supabase Storage if configured
+LLM API
+Embedding model/API
+Optional pgvector
+Excel parser
+PDF parser
+Vercel
+
+Do NOT introduce:
+
+Docker
+Kubernetes
+Kafka
+Redis
+microservices
+LangChain
+LangGraph
+MongoDB
+Qdrant
+separate Express backend
+separate Python backend
+
+unless absolutely necessary.
+
+The prototype must remain one deployable Next.js application.
+
+⸻
+
+38. AI PROVIDER ABSTRACTION
+
+Do not hard-code every component directly to Gemini.
+
+Create interfaces such as:
+
+AIProvider
+EmbeddingProvider
+StorageProvider
+
+Example conceptual structure:
+
+lib/ai/
+extraction.ts
+matching.ts
+embeddings.ts
+providers/
+
+lib/storage/
+provider.ts
+supabase.ts
+local.ts
+
+This allows the application to work in DEMO_MODE if API credentials are unavailable.
+
+⸻
+
+39. DEMO MODE
+
+Create:
+
+DEMO_MODE=true
+
+When enabled:
+
+* use seeded data
+* use deterministic fallback examples
+* do not expose API keys
+* allow the complete demo workflow to operate
+
+But:
+
+IMPORTANT:
+
+Demo mode must not simply return fake matching results for every input.
+
+The core seeded scenarios can have deterministic fallback behavior.
+
+For arbitrary input, clearly handle unavailable AI configuration.
+
+The architecture must allow switching to real AI by changing environment variables.
+
+⸻
+
+40. ENVIRONMENT VARIABLES
+
+Create .env.example.
+
+Include only necessary variables.
+
+Example:
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+AI_API_KEY=
+
+EMBEDDING_API_KEY=
+
+STORAGE_BUCKET=
+
+DEMO_MODE=true
+
+Do not commit actual secrets.
+
+Never expose server-only secrets through NEXT_PUBLIC variables.
+
+⸻
+
+41. ERROR HANDLING
+
+Every external dependency must fail gracefully.
+
+If AI unavailable:
+
+show:
+
+“AI service unavailable. Demo processing mode is active.”
+
+If Supabase unavailable:
+
+show a clear configuration error.
+
+If file parsing fails:
+
+show:
+
+“Unable to process this file. Please verify the format.”
+
+Never display raw stack traces to users.
+
+⸻
+
+42. LOADING STATES
+
+Create polished states for:
+
+Processing report
+Extracting event
+Searching schedule
+Resolving activity
+Saving decision
+Updating schedule
+
+Example:
+
+“Understanding field report…”
+
+then:
+
+“Extracting execution event…”
+
+then:
+
+“Resolving against 75 planned activities…”
+
+then:
+
+“Match found.”
+
+This creates the perception of an actual intelligent pipeline while remaining truthful.
+
+⸻
+
+43. SECURITY BASICS
+
+Even though authentication is mocked:
+
+* never expose service role keys client-side
+* validate API inputs
+* validate dates
+* validate activity IDs against database
+* never trust an activity ID generated by an LLM
+* activity IDs must always be selected from schedule_activities
+* server-side approval must verify that selected activity exists
+* sanitize uploaded filenames
+* limit file sizes
+* do not expose secrets
+
+⸻
+
+44. IMPORTANT AI SAFETY RULE
+
+NEVER allow:
+
+LLM → arbitrary activity ID → database update
+
+Correct flow:
+
+LLM → structured execution event
+
+Then:
+
+application → actual schedule candidates
+
+Then:
+
+retrieval/ranking → candidate IDs
+
+Then:
+
+confidence policy
+
+Then:
+
+human approval
+
+Then:
+
+database update.
+
+The schedule database is the source of truth for activity IDs.
+
+⸻
+
+45. TYPESCRIPT TYPES
+
+Create shared domain types.
+
+ExecutionEvent
+
+ScheduleActivity
+
+CandidateMatch
+
+ResolutionResult
+
+PlannerDecision
+
+AuditEvent
+
+Do not duplicate interfaces throughout the codebase.
+
+⸻
+
+46. COMPONENT STRUCTURE
+
+Use reusable components.
+
+Example:
+
+components/
+
+field/
+FieldCapture.tsx
+ReportPreview.tsx
+ExtractionResult.tsx
+
+planner/
+ResolutionInbox.tsx
+ResolutionCard.tsx
+CandidateList.tsx
+MatchExplanation.tsx
+PlannedActual.tsx
+ApprovalActions.tsx
+AuditTimeline.tsx
+
+shared/
+StatusBadge.tsx
+ConfidenceBadge.tsx
+ProcessingState.tsx
+EmptyState.tsx
+
+Do not create giant 1000-line page components.
+
+⸻
+
+47. RESPONSIVE DESIGN
+
+Primary target:
+
+Desktop/laptop for planner.
+
+Mobile-friendly for supervisor.
+
+The supervisor interface should work well on a phone-sized viewport.
+
+The planner interface should be optimized for desktop.
+
+Do not build a separate mobile app.
+
+⸻
+
+48. ACCESSIBILITY
+
+Use:
+
+* semantic HTML
+* keyboard accessible buttons
+* visible focus states
+* appropriate labels
+* sufficient contrast
+
+Do not sacrifice basic usability for visual effects.
+
+⸻
+
+49. PERFORMANCE
+
+Keep the prototype fast.
+
+Do not perform unnecessary AI calls.
+
+Cache schedule embeddings.
+
+Do not regenerate embeddings for every report if the schedule has not changed.
+
+Do not call the LLM multiple times unnecessarily.
+
+Prefer:
+
+one extraction call
+
+one retrieval process
+
+one optional reranking call
+
+rather than a chain of unnecessary agents.
+
+⸻
+
+50. TESTING
+
+Create basic tests for:
+
+1. Extraction schema validation
+2. Identifier matching
+3. Semantic candidate retrieval
+4. Confidence calculation
+5. Ambiguity detection
+6. Unmatched detection
+7. Approve/update
+8. Audit logging
+
+Most important:
+
+Test that an ambiguous report cannot automatically update the schedule.
+
+Test that an arbitrary LLM-generated activity ID cannot update the database unless it exists in schedule_activities.
+
+⸻
+
+51. ACCEPTANCE TEST
+
+The project is NOT complete until this works:
+
+Supervisor login
+
+↓
+
+Enter:
+
+“Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.”
+
+↓
+
+AI extraction
+
+↓
+
+Execution event
+
+↓
+
+Schedule candidate retrieval
+
+↓
+
+A10931 selected
+
+↓
+
+Confidence
+
+↓
+
+Why-this-match
+
+↓
+
+Planned vs actual
+
+↓
+
+Approve & Update
+
+↓
+
+Database actual_finish changes
+
+↓
+
+Audit entry created
+
+↓
+
+Planner can see updated activity
+
+↓
+
+Planner asks:
+
+“Which activities were completed later than planned?”
+
+↓
+
+A10931 appears with +1 day variance.
+
+Then:
+
+“Pipe work completed.”
+
+↓
+
+System displays Needs Review.
+
+Then:
+
+“New drainage trench completed near Unit 4.”
+
+↓
+
+System displays Unmatched.
+
+All three scenarios must work.
+
+⸻
+
+52. NO FEATURE CREEP
+
+Do NOT build:
+
+* full enterprise authentication
+* billing
+* notifications
+* chat
+* social features
+* project creation wizard
+* user administration
+* complex settings
+* advanced forecasting
+* computer vision
+* YOLO
+* geofencing
+* offline synchronization
+* native mobile app
+* WhatsApp integration
+* full Primavera API integration
+* XER parser
+* MPP parser
+* Kubernetes
+* microservices
+
+These may be future roadmap items.
+
+They are NOT MVP requirements.
+
+⸻
+
+53. DO NOT FAKE PRODUCTION INTEGRATIONS
+
+The prototype should state:
+
+Schedule Source:
+“Representative Primavera/MS Project export”
+
+Production architecture:
+
+“Primavera / MS Project / PMIS integration adapters”
+
+Do not claim live Primavera synchronization unless it is actually implemented.
+
+⸻
+
+54. FUTURE EXTENSIBILITY
+
+Design the code so future additions are possible without rewriting the product.
+
+Future:
+
+Primavera P6 API
+MS Project
+Other PMIS
+WhatsApp/enterprise messaging
+Advanced OCR
+Speech-to-text
+Historical learning
+Productivity forecasting
+Delay prediction
+Institutional memory
+Role-based enterprise authentication
+
+But do not implement these unless required for the MVP.
+
+⸻
+
+55. DEMO DATA MUST LOOK REAL
+
+Avoid fake generic examples such as:
+
+“Task 1 completed.”
+
+Use realistic infrastructure terminology.
+
+Include:
+
+* WBS
+* activity IDs
+* disciplines
+* locations
+* planned dates
+* actual dates
+* construction terminology
+* multiple similar activities
+* different supervisor language
+
+The dataset should create a genuine entity-resolution problem.
+
+⸻
+
+56. PRODUCT LANGUAGE
+
+Prefer:
+
+“Execution Event”
+
+“Schedule Activity”
+
+“Resolution”
+
+“Evidence”
+
+“Confidence”
+
+“Candidate”
+
+“Needs Review”
+
+“Unmatched”
+
+“Actual Start”
+
+“Actual Finish”
+
+“Variance”
+
+“Planner Decision”
+
+“Audit Trail”
+
+Avoid generic language like:
+
+“AI magic”
+
+“Smart task”
+
+“AI assistant”
+
+“Chat with your project”
+
+⸻
+
+57. FINAL UX STORY
+
+Supervisor:
+
+“What happened?”
+
+↓
+
+Field statement
+
+↓
+
+“I understood…”
+
+↓
+
+Confirm
+
+Planner:
+
+“New execution event received.”
+
+↓
+
+“AI suggests…”
+
+↓
+
+“Why this match?”
+
+↓
+
+“94 High Confidence”
+
+↓
+
+“Planned vs Actual”
+
+↓
+
+Approve
+
+↓
+
+“Schedule updated”
+
+↓
+
+Audit
+
+↓
+
+Execution intelligence.
+
+This should feel like ONE continuous product.
+
+⸻
+
+58. FINAL IMPLEMENTATION PRINCIPLE
+
+Do not optimize for number of features.
+
+Optimize for:
+
+DEMO CREDIBILITY × AI DEPTH × WORKFLOW COMPLETENESS × UX QUALITY × RELIABILITY
+
+The most important feature is the field-to-schedule resolution loop.
+
+⸻
+
+59. DEVELOPMENT ORDER
+
+Implement in exactly this order:
+
+PHASE 1
+Project scaffold
+
+PHASE 2
+Supabase schema
+
+PHASE 3
+Seed schedule + field reports
+
+PHASE 4
+Planner UI with seeded data
+
+PHASE 5
+Supervisor UI
+
+PHASE 6
+Structured extraction
+
+PHASE 7
+Semantic retrieval
+
+PHASE 8
+Contextual ranking
+
+PHASE 9
+Confidence + ambiguity
+
+PHASE 10
+Approve/change/reject
+
+PHASE 11
+Actual schedule update
+
+PHASE 12
+Audit trail
+
+PHASE 13
+Excel ingestion
+
+PHASE 14
+Voice integration/fallback
+
+PHASE 15
+Execution intelligence
+
+PHASE 16
+Evaluation
+
+PHASE 17
+Polish
+
+PHASE 18
+Production build
+
+⸻
+
+60. CRITICAL CODING AGENT INSTRUCTION
+
+DO NOT stop after generating the architecture.
+
+DO NOT provide only code snippets.
+
+DO NOT ask unnecessary clarification questions.
+
+Make reasonable implementation decisions based on this specification.
+
+Build the actual complete repository.
+
+After implementation:
+
+1. Run type checking.
+2. Run linting.
+3. Run tests.
+4. Run build.
+5. Fix all errors.
+6. Verify all routes.
+7. Verify database interactions.
+8. Verify seed script.
+9. Verify demo reset.
+10. Verify the golden-path demo.
+11. Verify ambiguous scenario.
+12. Verify unmatched scenario.
+13. Verify production build.
+14. Provide exact setup commands.
+15. Provide exact environment variables required.
+16. Provide exact Supabase setup instructions.
+17. Provide exact Vercel deployment instructions.
+
+Do not claim something works unless it has been tested.
+
+If an external API cannot be tested because credentials are unavailable, isolate it behind a provider interface and provide a deterministic demo fallback.
+
+Do not introduce unnecessary dependencies.
+
+Do not rewrite working code unnecessarily.
+
+Do not refactor merely for stylistic reasons once the end-to-end workflow is working.
+
+The final repository must be deployable as one Next.js application.
+
+⸻
+
+61. FINAL OUTPUT REQUIRED FROM YOU
+
+When you finish building, report:
+
+A. Repository structure
+
+Show important folders/files.
+
+B. Setup
+
+Exact commands:
+
+npm install
+…
+npm run seed
+…
+npm run dev
+
+C. Environment variables
+
+List required variables.
+
+D. Supabase setup
+
+Exact SQL/schema/migration/seed process.
+
+E. Demo credentials
+
+Supervisor
+Planner
+
+F. Demo flow
+
+Exact clicks/actions for the 3-minute presentation.
+
+G. AI/ML explanation
+
+Explain:
+
+Extraction
+Normalization
+Embedding
+Candidate retrieval
+Context scoring
+Confidence
+Ambiguity
+Evaluation
+
+H. Vercel deployment
+
+Exact steps.
+
+I. Known limitations
+
+Be honest.
+
+J. Future production architecture
+
+Briefly explain how the prototype evolves into Primavera/MS Project/PMIS integration.
+
+⸻
+
+62. DEFINITION OF DONE
+
+The MVP is DONE only when:
+
+✓ One Next.js application exists
+
+✓ Supervisor role works
+
+✓ Planner role works
+
+✓ Mock login works
+
+✓ Supabase database works
+
+✓ Synthetic project schedule is seeded
+
+✓ Multiple supervisors exist
+
+✓ Field reports exist
+
+✓ Natural-language extraction works
+
+✓ Execution event is generated
+
+✓ Schedule candidates are retrieved
+
+✓ Semantic matching works
+
+✓ Contextual scoring works
+
+✓ Confidence is calculated
+
+✓ Candidate margin is calculated
+
+✓ Ambiguous reports require review
+
+✓ Unmatched reports are detected
+
+✓ Evidence is displayed
+
+✓ Planner can approve
+
+✓ Planner can change match
+
+✓ Planner can reject
+
+✓ Actual schedule fields update
+
+✓ Audit trail is created
+
+✓ Excel/CSV input works
+
+✓ Voice/transcript path exists
+
+✓ Execution intelligence query works
+
+✓ Evaluation dataset exists
+
+✓ Baseline comparison exists
+
+✓ Application builds successfully
+
+✓ Application deploys to Vercel
+
+✓ Demo can be reset
+
+✓ Golden path works without manual database manipulation
+
+✓ No secrets are committed
+
+✓ No unsupported production claims are displayed
+
+MOST IMPORTANT:
+
+The application must demonstrate that NEXORA is an AI/ML-powered field-to-schedule reconciliation system—not a generic dashboard and not a thin LLM wrapper.
+
+Build for the judges to understand the intelligence by watching the workflow.
+
+The final emotional sequence should be:
+
+MESSY FIELD LANGUAGE
+
+↓
+
+UNDERSTOOD
+
+↓
+
+STRUCTURED
+
+↓
+
+MATCHED
+
+↓
+
+EXPLAINED
+
+↓
+
+VERIFIED
+
+↓
+
+SCHEDULE UPDATED
+
+↓
+
+INTELLIGENCE CREATED
+
+That is the product.

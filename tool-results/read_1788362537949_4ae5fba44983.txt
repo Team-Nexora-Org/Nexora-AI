@@ -1,0 +1,573 @@
+     1→// NEXORA — Database seed (deterministic, no LLM dependency)
+     2→//
+     3→// Creates a representative "Unit-4 Expansion Project" schedule (75 L5/L6
+     4→// activities across 5 disciplines), 3 supervisors, and a set of demo field
+     5→// reports whose AI resolution is computed with the REAL matching pipeline
+     6→// (so seeded matches are identical to live matches). Some reports are
+     7→// pre-approved to demonstrate the schedule update + audit trail.
+     8→
+     9→import { db } from '@/lib/db'
+    10→import { buildSearchText } from '@/lib/ai/normalization'
+    11→import {
+    12→  buildIndexFromActivities,
+    13→  retrieveCandidates,
+    14→  decide,
+    15→} from '@/lib/ai/matching'
+    16→import type { ExecutionEvent, ScheduleActivityDTO } from '@/lib/types'
+    17→
+    18→// ---------------------------------------------------------------------------
+    19→// Schedule activities (75). Tuple: [activityId, wbs, discipline, location,
+    20→// activityName, workType, identifier, plannedStart, plannedFinish, description]
+    21→// ---------------------------------------------------------------------------
+    22→type ActivityTuple = [
+    23→  string, string, string, string, string, string, string, string, string, string,
+    24→]
+    25→
+    26→const ACTIVITIES: ActivityTuple[] = [
+    27→  // ---- Piping (PIP-03 / PIP-04) ----
+    28→  ['A10931', 'PIP-03', 'Piping', 'Unit 2', 'Erect Spool Line 24-XX', 'Spool Erection', 'Line 24-XX', '2026-08-28', '2026-08-30', 'Erect and align spool piece on Line 24-XX'],
+    29→  ['A10932', 'PIP-03', 'Piping', 'Unit 2', 'Erect Spool Line 25-XX', 'Spool Erection', 'Line 25-XX', '2026-08-29', '2026-08-31', 'Erect and align spool piece on Line 25-XX'],
+    30→  ['A10933', 'PIP-03', 'Piping', 'Unit 2', 'Hydrotest Line 24-XX', 'Hydrotest', 'Line 24-XX', '2026-09-01', '2026-09-02', 'Hydrostatic pressure test on Line 24-XX'],
+    31→  ['A10934', 'PIP-03', 'Piping', 'Unit 2', 'Hydrotest Line 25-XX', 'Hydrotest', 'Line 25-XX', '2026-09-03', '2026-09-04', 'Hydrostatic pressure test on Line 25-XX'],
+    32→  ['A10935', 'PIP-03', 'Piping', 'Unit 2', 'Welding Line 24-XX', 'Welding', 'Line 24-XX', '2026-08-26', '2026-08-28', 'Field welding of Line 24-XX joints'],
+    33→  ['A10936', 'PIP-03', 'Piping', 'Unit 2', 'Welding Line 25-XX', 'Welding', 'Line 25-XX', '2026-08-27', '2026-08-29', 'Field welding of Line 25-XX joints'],
+    34→  ['A10937', 'PIP-03', 'Piping', 'Unit 2', 'Install Pipe Support P-201', 'Pipe Support', 'P-201', '2026-09-02', '2026-09-03', 'Install pipe support P-201 on Line 24-XX'],
+    35→  ['A10938', 'PIP-03', 'Piping', 'Unit 2', 'Install Pipe Support P-202', 'Pipe Support', 'P-202', '2026-09-03', '2026-09-05', 'Install pipe support P-202 on Line 25-XX'],
+    36→  ['A10939', 'PIP-03', 'Piping', 'Unit 2', 'Erect Spool Line 26-XX', 'Spool Erection', 'Line 26-XX', '2026-09-05', '2026-09-07', 'Erect and align spool piece on Line 26-XX'],
+    37→  ['A10940', 'PIP-03', 'Piping', 'Unit 2', 'Painting Line 24-XX', 'Painting', 'Line 24-XX', '2026-09-06', '2026-09-07', 'Surface preparation and painting of Line 24-XX'],
+    38→  ['A10941', 'PIP-03', 'Piping', 'Unit 2', 'Insulation Line 24-XX', 'Insulation', 'Line 24-XX', '2026-09-08', '2026-09-10', 'Thermal insulation of Line 24-XX'],
+    39→  ['A10942', 'PIP-04', 'Piping', 'Unit 3', 'Erect Spool Line 30-XX', 'Spool Erection', 'Line 30-XX', '2026-08-30', '2026-09-01', 'Erect and align spool piece on Line 30-XX'],
+    40→  ['A10943', 'PIP-04', 'Piping', 'Unit 3', 'Welding Line 30-XX', 'Welding', 'Line 30-XX', '2026-09-01', '2026-09-03', 'Field welding of Line 30-XX joints'],
+    41→  ['A10944', 'PIP-04', 'Piping', 'Unit 3', 'Hydrotest Line 30-XX', 'Hydrotest', 'Line 30-XX', '2026-09-04', '2026-09-05', 'Hydrostatic pressure test on Line 30-XX'],
+    42→  ['A10945', 'PIP-04', 'Piping', 'Unit 3', 'Install Pipe Support P-301', 'Pipe Support', 'P-301', '2026-09-05', '2026-09-06', 'Install pipe support P-301 on Line 30-XX'],
+    43→
+    44→  // ---- Civil (CIV-02 / CIV-03) ----
+    45→  ['A20418', 'CIV-02', 'Civil', 'Unit 1', 'Cast Foundation F-102', 'Concrete', 'Foundation F-102', '2026-08-27', '2026-08-30', 'Cast concrete for foundation F-102'],
+    46→  ['A20419', 'CIV-02', 'Civil', 'Unit 1', 'Cast Foundation F-103', 'Concrete', 'Foundation F-103', '2026-08-28', '2026-08-31', 'Cast concrete for foundation F-103'],
+    47→  ['A20420', 'CIV-02', 'Civil', 'Unit 1', 'Excavation Trench T-11', 'Excavation', 'Trench T-11', '2026-08-25', '2026-08-27', 'Excavate cable trench T-11 in Unit 1'],
+    48→  ['A20421', 'CIV-02', 'Civil', 'Unit 1', 'Excavation Trench T-12', 'Excavation', 'Trench T-12', '2026-08-26', '2026-08-28', 'Excavate cable trench T-12 in Unit 1'],
+    49→  ['A20422', 'CIV-02', 'Civil', 'Unit 1', 'Rebar Foundation F-102', 'Rebar', 'Foundation F-102', '2026-08-24', '2026-08-26', 'Place rebar cage for foundation F-102'],
+    50→  ['A20423', 'CIV-02', 'Civil', 'Unit 1', 'Rebar Foundation F-103', 'Rebar', 'Foundation F-103', '2026-08-25', '2026-08-27', 'Place rebar cage for foundation F-103'],
+    51→  ['A20424', 'CIV-02', 'Civil', 'Unit 1', 'Concrete Pedestal P-51', 'Concrete', 'Pedestal P-51', '2026-09-01', '2026-09-02', 'Cast concrete pedestal P-51'],
+    52→  ['A20425', 'CIV-02', 'Civil', 'Unit 1', 'Concrete Pedestal P-52', 'Concrete', 'Pedestal P-52', '2026-09-02', '2026-09-03', 'Cast concrete pedestal P-52'],
+    53→  ['A20426', 'CIV-02', 'Civil', 'Unit 1', 'Backfill Trench T-11', 'Backfill', 'Trench T-11', '2026-08-29', '2026-08-30', 'Backfill cable trench T-11 after cable pulling'],
+    54→  ['A20427', 'CIV-02', 'Civil', 'Unit 1', 'Backfill Trench T-12', 'Backfill', 'Trench T-12', '2026-08-30', '2026-08-31', 'Backfill cable trench T-12 after cable pulling'],
+    55→  ['A20428', 'CIV-03', 'Civil', 'Unit 4', 'Cast Foundation F-201', 'Concrete', 'Foundation F-201', '2026-09-01', '2026-09-04', 'Cast concrete for foundation F-201 in Unit 4'],
+    56→  ['A20429', 'CIV-03', 'Civil', 'Unit 4', 'Excavation Storm Culvert SC-1', 'Excavation', 'Storm Culvert SC-1', '2026-08-20', '2026-08-24', 'Excavate storm culvert SC-1 in Unit 4'],
+    57→  ['A20430', 'CIV-03', 'Civil', 'Unit 4', 'Rebar Pedestal P-70', 'Rebar', 'Pedestal P-70', '2026-09-04', '2026-09-06', 'Place rebar for pedestal P-70 in Unit 4'],
+    58→  ['A20431', 'CIV-03', 'Civil', 'Unit 4', 'Concrete Curb C-15', 'Curb', 'Curb C-15', '2026-09-05', '2026-09-07', 'Cast concrete curb C-15 in Unit 4'],
+    59→  ['A20432', 'CIV-03', 'Civil', 'Unit 4', 'Backfill Storm Culvert SC-1', 'Backfill', 'Storm Culvert SC-1', '2026-08-25', '2026-08-26', 'Backfill storm culvert SC-1 in Unit 4'],
+    60→
+    61→  // ---- Electrical (ELE-04) ----
+    62→  ['A30512', 'ELE-04', 'Electrical', 'Compressor Area', 'Install Cable Tray C-17', 'Cable Tray', 'Cable Tray C-17', '2026-08-29', '2026-09-01', 'Install cable tray C-17 in compressor area'],
+    63→  ['A30513', 'ELE-04', 'Electrical', 'Compressor Area', 'Install Cable Tray C-18', 'Cable Tray', 'Cable Tray C-18', '2026-08-30', '2026-09-02', 'Install cable tray C-18 in compressor area'],
+    64→  ['A30514', 'ELE-04', 'Electrical', 'Compressor Area', 'Cable Pulling CT-17', 'Cable Pulling', 'Cable Tray C-17', '2026-09-02', '2026-09-04', 'Pull cables through tray C-17'],
+    65→  ['A30515', 'ELE-04', 'Electrical', 'Compressor Area', 'Cable Pulling CT-18', 'Cable Pulling', 'Cable Tray C-18', '2026-09-03', '2026-09-05', 'Pull cables through tray C-18'],
+    66→  ['A30516', 'ELE-04', 'Electrical', 'Unit 2', 'Install Lighting Panel LP-1', 'Lighting Panel', 'Lighting Panel LP-1', '2026-09-01', '2026-09-03', 'Install lighting panel LP-1 in Unit 2'],
+    67→  ['A30517', 'ELE-04', 'Electrical', 'Unit 2', 'Install Lighting Panel LP-2', 'Lighting Panel', 'Lighting Panel LP-2', '2026-09-02', '2026-09-04', 'Install lighting panel LP-2 in Unit 2'],
+    68→  ['A30518', 'ELE-04', 'Electrical', 'Unit 2', 'Cable Pulling LP-1', 'Cable Pulling', 'Lighting Panel LP-1', '2026-09-04', '2026-09-06', 'Pull feeders to lighting panel LP-1'],
+    69→  ['A30519', 'ELE-04', 'Electrical', 'Unit 3', 'Install Cable Tray C-21', 'Cable Tray', 'Cable Tray C-21', '2026-09-05', '2026-09-07', 'Install cable tray C-21 in Unit 3'],
+    70→  ['A30520', 'ELE-04', 'Electrical', 'Unit 3', 'Cable Pulling CT-21', 'Cable Pulling', 'Cable Tray C-21', '2026-09-07', '2026-09-09', 'Pull cables through tray C-21'],
+    71→  ['A30521', 'ELE-04', 'Electrical', 'Compressor Area', 'Termination Panel P-9', 'Termination', 'Panel P-9', '2026-09-06', '2026-09-08', 'Termination at panel P-9 in compressor area'],
+    72→  ['A30522', 'ELE-04', 'Electrical', 'Unit 2', 'Earthing Grid Install', 'Earthing', 'Earthing Grid', '2026-09-08', '2026-09-10', 'Install earthing grid in Unit 2'],
+    73→  ['A30523', 'ELE-04', 'Electrical', 'Unit 3', 'Earthing Grid Install', 'Earthing', 'Earthing Grid', '2026-09-09', '2026-09-11', 'Install earthing grid in Unit 3'],
+    74→  ['A30524', 'ELE-04', 'Electrical', 'Compressor Area', 'Megger Test CT-17', 'Megger Test', 'Cable Tray C-17', '2026-09-09', '2026-09-10', 'Megger insulation test on cables in tray C-17'],
+    75→  ['A30525', 'ELE-04', 'Electrical', 'Unit 2', 'Install Junction Box JB-3', 'Junction Box', 'Junction Box JB-3', '2026-09-10', '2026-09-12', 'Install junction box JB-3 in Unit 2'],
+    76→  ['A30526', 'ELE-04', 'Electrical', 'Unit 2', 'Install Motor Control Center', 'Motor Control Center', 'Motor Control Center', '2026-09-11', '2026-09-14', 'Install motor control center in Unit 2'],
+    77→
+    78→  // ---- Mechanical (MEC-05) ----
+    79→  ['A40601', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Pump P-101', 'Equipment Installation', 'Pump P-101', '2026-08-28', '2026-09-01', 'Install pump P-101 in Unit 2'],
+    80→  ['A40602', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Pump P-102', 'Equipment Installation', 'Pump P-102', '2026-08-29', '2026-09-02', 'Install pump P-102 in Unit 2'],
+    81→  ['A40603', 'MEC-05', 'Mechanical', 'Unit 2', 'Align Pump P-101', 'Alignment', 'Pump P-101', '2026-09-02', '2026-09-03', 'Align pump P-101 with motor'],
+    82→  ['A40604', 'MEC-05', 'Mechanical', 'Unit 2', 'Align Pump P-102', 'Alignment', 'Pump P-102', '2026-09-03', '2026-09-04', 'Align pump P-102 with motor'],
+    83→  ['A40605', 'MEC-05', 'Mechanical', 'Compressor Area', 'Install Compressor C-1', 'Equipment Installation', 'Compressor C-1', '2026-09-01', '2026-09-05', 'Install compressor C-1 in compressor area'],
+    84→  ['A40606', 'MEC-05', 'Mechanical', 'Compressor Area', 'Align Compressor C-1', 'Alignment', 'Compressor C-1', '2026-09-05', '2026-09-06', 'Align compressor C-1'],
+    85→  ['A40607', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Heat Exchanger E-1', 'Equipment Installation', 'Heat Exchanger E-1', '2026-09-03', '2026-09-07', 'Install heat exchanger E-1 in Unit 2'],
+    86→  ['A40608', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Heat Exchanger E-2', 'Equipment Installation', 'Heat Exchanger E-2', '2026-09-04', '2026-09-08', 'Install heat exchanger E-2 in Unit 2'],
+    87→  ['A40609', 'MEC-05', 'Mechanical', 'Unit 3', 'Install Pump P-201', 'Equipment Installation', 'Pump P-201', '2026-09-06', '2026-09-09', 'Install pump P-201 in Unit 3'],
+    88→  ['A40610', 'MEC-05', 'Mechanical', 'Unit 3', 'Align Pump P-201', 'Alignment', 'Pump P-201', '2026-09-09', '2026-09-10', 'Align pump P-201 with motor'],
+    89→  ['A40611', 'MEC-05', 'Mechanical', 'Unit 3', 'Install Vessel V-5', 'Equipment Installation', 'Vessel V-5', '2026-09-08', '2026-09-12', 'Install vessel V-5 in Unit 3'],
+    90→  ['A40612', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Valve V-301', 'Valve Installation', 'Valve V-301', '2026-09-06', '2026-09-07', 'Install valve V-301 on Line 24-XX'],
+    91→  ['A40613', 'MEC-05', 'Mechanical', 'Unit 2', 'Install Valve V-302', 'Valve Installation', 'Valve V-302', '2026-09-07', '2026-09-08', 'Install valve V-302 on Line 25-XX'],
+    92→  ['A40614', 'MEC-05', 'Mechanical', 'Compressor Area', 'Install Compressor C-2', 'Equipment Installation', 'Compressor C-2', '2026-09-08', '2026-09-12', 'Install compressor C-2 in compressor area'],
+    93→  ['A40615', 'MEC-05', 'Mechanical', 'Unit 2', 'Grouting Pump Base P-101', 'Grouting', 'Pump P-101', '2026-09-04', '2026-09-05', 'Grout base of pump P-101'],
+    94→
+    95→  // ---- Instrumentation (INS-06) ----
+    96→  ['A50701', 'INS-06', 'Instrumentation', 'Unit 2', 'Install Temperature Transmitter TT-101', 'Instrument Installation', 'Transmitter TT-101', '2026-09-05', '2026-09-06', 'Install temperature transmitter TT-101'],
+    97→  ['A50702', 'INS-06', 'Instrumentation', 'Unit 2', 'Install Pressure Transmitter PT-101', 'Instrument Installation', 'Transmitter PT-101', '2026-09-06', '2026-09-07', 'Install pressure transmitter PT-101'],
+    98→  ['A50703', 'INS-06', 'Instrumentation', 'Unit 2', 'Install Flow Transmitter FT-101', 'Instrument Installation', 'Transmitter FT-101', '2026-09-07', '2026-09-08', 'Install flow transmitter FT-101'],
+    99→  ['A50704', 'INS-06', 'Instrumentation', 'Unit 2', 'Calibrate TT-101', 'Calibration', 'Transmitter TT-101', '2026-09-08', '2026-09-09', 'Calibrate temperature transmitter TT-101'],
+   100→  ['A50705', 'INS-06', 'Instrumentation', 'Unit 2', 'Calibrate PT-101', 'Calibration', 'Transmitter PT-101', '2026-09-09', '2026-09-10', 'Calibrate pressure transmitter PT-101'],
+   101→  ['A50706', 'INS-06', 'Instrumentation', 'Compressor Area', 'Install Level Switch LS-7', 'Instrument Installation', 'Level Switch LS-7', '2026-09-06', '2026-09-07', 'Install level switch LS-7 in compressor area'],
+   102→  ['A50707', 'INS-06', 'Instrumentation', 'Compressor Area', 'Install Level Switch LS-8', 'Instrument Installation', 'Level Switch LS-8', '2026-09-07', '2026-09-08', 'Install level switch LS-8 in compressor area'],
+   103→  ['A50708', 'INS-06', 'Instrumentation', 'Unit 3', 'Install Temperature Transmitter TT-201', 'Instrument Installation', 'Transmitter TT-201', '2026-09-09', '2026-09-10', 'Install temperature transmitter TT-201 in Unit 3'],
+   104→  ['A50709', 'INS-06', 'Instrumentation', 'Unit 3', 'Install Pressure Transmitter PT-201', 'Instrument Installation', 'Transmitter PT-201', '2026-09-11', '2026-09-12', 'Install pressure transmitter PT-201 in Unit 3'],
+   105→  ['A50710', 'INS-06', 'Instrumentation', 'Unit 2', 'Loop Test LT-101', 'Loop Test', 'Loop LT-101', '2026-09-10', '2026-09-11', 'Loop test LT-101 from transmitter to panel'],
+   106→  ['A50711', 'INS-06', 'Instrumentation', 'Unit 2', 'Loop Test LT-102', 'Loop Test', 'Loop LT-102', '2026-09-11', '2026-09-12', 'Loop test LT-102 from transmitter to panel'],
+   107→  ['A50712', 'INS-06', 'Instrumentation', 'Compressor Area', 'Install Control Valve CV-1', 'Control Valve', 'Control Valve CV-1', '2026-09-08', '2026-09-10', 'Install control valve CV-1 in compressor area'],
+   108→  ['A50713', 'INS-06', 'Instrumentation', 'Compressor Area', 'Install Control Valve CV-2', 'Control Valve', 'Control Valve CV-2', '2026-09-10', '2026-09-12', 'Install control valve CV-2 in compressor area'],
+   109→  ['A50714', 'INS-06', 'Instrumentation', 'Unit 2', 'Install Junction Box JBI-3', 'Instrument Installation', 'Junction Box JBI-3', '2026-09-12', '2026-09-13', 'Install instrument junction box JBI-3 in Unit 2'],
+   110→  ['A50715', 'INS-06', 'Instrumentation', 'Unit 3', 'Calibrate TT-201', 'Calibration', 'Transmitter TT-201', '2026-09-13', '2026-09-14', 'Calibrate temperature transmitter TT-201 in Unit 3'],
+   111→]
+   112→
+   113→// ---------------------------------------------------------------------------
+   114→// Supervisors
+   115→// ---------------------------------------------------------------------------
+   116→const SUPERVISORS = [
+   117→  { name: 'Ramesh Kumar', role: 'Piping Supervisor', discipline: 'Piping' },
+   118→  { name: 'Amit Verma', role: 'Civil Supervisor', discipline: 'Civil' },
+   119→  { name: 'Suresh Singh', role: 'Electrical Supervisor', discipline: 'Electrical' },
+   120→]
+   121→
+   122→// ---------------------------------------------------------------------------
+   123→// Demo field reports. `approved` = already acted on by planner (shows audit +
+   124→// schedule update). The execution event is the "AI extracted" structure.
+   125→// ---------------------------------------------------------------------------
+   126→interface DemoReport {
+   127→  supervisorIdx: number
+   128→  inputType: 'text' | 'voice' | 'excel' | 'csv' | 'pdf'
+   129→  raw: string
+   130→  reportDate: string
+   131→  event: ExecutionEvent
+   132→  approved?: boolean
+   133→  plannerName?: string
+   134→  reason?: string
+   135→}
+   136→
+   137→const DEMO_REPORTS: DemoReport[] = [
+   138→  {
+   139→    supervisorIdx: 0,
+   140→    inputType: 'text',
+   141→    raw: 'Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.',
+   142→    reportDate: '2026-08-31',
+   143→    event: {
+   144→      discipline: 'Piping',
+   145→      workType: 'Spool Erection',
+   146→      identifier: 'Line 24-XX',
+   147→      location: 'Unit 2',
+   148→      actualStart: '2026-08-29',
+   149→      actualFinish: '2026-08-31',
+   150→      status: 'Completed',
+   151→      quantity: null,
+   152→      unit: null,
+   153→      evidence: 'Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua',
+   154→    },
+   155→  },
+   156→  {
+   157→    supervisorIdx: 1,
+   158→    inputType: 'text',
+   159→    raw: 'Foundation F-102 ka concrete casting 28 August ko start hua, 30 August ko complete ho gaya.',
+   160→    reportDate: '2026-08-30',
+   161→    event: {
+   162→      discipline: 'Civil',
+   163→      workType: 'Concrete',
+   164→      identifier: 'Foundation F-102',
+   165→      location: 'Unit 1',
+   166→      actualStart: '2026-08-28',
+   167→      actualFinish: '2026-08-30',
+   168→      status: 'Completed',
+   169→      quantity: null,
+   170→      unit: null,
+   171→      evidence: 'Foundation F-102 ka concrete casting 28 August ko start hua, 30 August ko complete ho gaya',
+   172→    },
+   173→  },
+   174→  {
+   175→    supervisorIdx: 2,
+   176→    inputType: 'voice',
+   177→    raw: 'Compressor area me cable tray C-17 ki installation 29 August ko start ho gayi hai.',
+   178→    reportDate: '2026-08-29',
+   179→    event: {
+   180→      discipline: 'Electrical',
+   181→      workType: 'Cable Tray',
+   182→      identifier: 'Cable Tray C-17',
+   183→      location: 'Compressor Area',
+   184→      actualStart: '2026-08-29',
+   185→      actualFinish: null,
+   186→      status: 'In Progress',
+   187→      quantity: null,
+   188→      unit: null,
+   189→      evidence: 'Compressor area me cable tray C-17 ki installation 29 August ko start ho gayi hai',
+   190→    },
+   191→  },
+   192→  {
+   193→    supervisorIdx: 0,
+   194→    inputType: 'text',
+   195→    raw: 'Line 25-XX ka spool erection 29 August se 31 August tak complete hua.',
+   196→    reportDate: '2026-08-31',
+   197→    event: {
+   198→      discipline: 'Piping',
+   199→      workType: 'Spool Erection',
+   200→      identifier: 'Line 25-XX',
+   201→      location: 'Unit 2',
+   202→      actualStart: '2026-08-29',
+   203→      actualFinish: '2026-08-31',
+   204→      status: 'Completed',
+   205→      quantity: null,
+   206→      unit: null,
+   207→      evidence: 'Line 25-XX ka spool erection 29 August se 31 August tak complete hua',
+   208→    },
+   209→    approved: true,
+   210→    plannerName: 'Arun Sharma',
+   211→    reason: 'On-time completion; verified with site walkdown',
+   212→  },
+   213→  {
+   214→    supervisorIdx: 0,
+   215→    inputType: 'text',
+   216→    raw: 'Pipe work completed.',
+   217→    reportDate: '2026-08-31',
+   218→    event: {
+   219→      discipline: 'Piping',
+   220→      workType: null,
+   221→      identifier: null,
+   222→      location: null,
+   223→      actualStart: null,
+   224→      actualFinish: null,
+   225→      status: 'Completed',
+   226→      quantity: null,
+   227→      unit: null,
+   228→      evidence: 'Pipe work completed',
+   229→    },
+   230→  },
+   231→  {
+   232→    supervisorIdx: 1,
+   233→    inputType: 'text',
+   234→    raw: 'New drainage trench completed near Unit 4.',
+   235→    reportDate: '2026-08-31',
+   236→    event: {
+   237→      discipline: 'Civil',
+   238→      workType: 'Drainage',
+   239→      identifier: null,
+   240→      location: 'Unit 4',
+   241→      actualStart: null,
+   242→      actualFinish: null,
+   243→      status: 'Completed',
+   244→      quantity: null,
+   245→      unit: null,
+   246→      evidence: 'New drainage trench completed near Unit 4',
+   247→    },
+   248→  },
+   249→]
+   250→
+   251→// ---------------------------------------------------------------------------
+   252→// Evaluation ground truth (used by /api/evaluation). Each row maps a raw
+   253→// field report to the expected activity ID, or to a special label
+   254→// ("AMBIGUOUS" / "UNMATCHED").
+   255→// ---------------------------------------------------------------------------
+   256→export interface GroundTruthRow {
+   257→  id: string
+   258→  supervisor: string
+   259→  discipline: string
+   260→  input_type: string
+   261→  raw_text: string
+   262→  ground_truth_activity_id: string
+   263→  ground_truth_start: string | null
+   264→  ground_truth_finish: string | null
+   265→  ground_truth_status: string | null
+   266→  expected_decision: 'HIGH_CONFIDENCE' | 'NEEDS_REVIEW' | 'UNMATCHED'
+   267→}
+   268→
+   269→const GROUND_TRUTH: GroundTruthRow[] = [
+   270→  { id: 'GT-001', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Line 24-XX ka spool erection 29 August ko start hua tha aur 31 August ko complete hua.', ground_truth_activity_id: 'A10931', ground_truth_start: '2026-08-29', ground_truth_finish: '2026-08-31', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   271→  { id: 'GT-002', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: '24-XX spool fixed and erection finished.', ground_truth_activity_id: 'A10931', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   272→  { id: 'GT-003', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Piping team completed erection of the 24-XX spool.', ground_truth_activity_id: 'A10931', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   273→  { id: 'GT-004', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: '24-XX ka spool erect kar diya hai.', ground_truth_activity_id: 'A10931', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   274→  { id: 'GT-005', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'voice', raw_text: 'Line 25-XX ka spool erection complete hai.', ground_truth_activity_id: 'A10932', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   275→  { id: 'GT-006', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Hydrotest on Line 24-XX finished on 2nd September.', ground_truth_activity_id: 'A10933', ground_truth_start: null, ground_truth_finish: '2026-09-02', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   276→  { id: 'GT-007', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Foundation F-102 concrete casting completed on 30 August.', ground_truth_activity_id: 'A20418', ground_truth_start: null, ground_truth_finish: '2026-08-30', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   277→  { id: 'GT-008', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Rebar for foundation F-103 placed and checked.', ground_truth_activity_id: 'A20423', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   278→  { id: 'GT-009', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Cable trench T-11 excavation done.', ground_truth_activity_id: 'A20420', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   279→  { id: 'GT-010', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Backfilling of trench T-12 completed on 31 August.', ground_truth_activity_id: 'A20427', ground_truth_start: null, ground_truth_finish: '2026-08-31', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   280→  { id: 'GT-011', supervisor: 'Suresh Singh', discipline: 'Electrical', input_type: 'voice', raw_text: 'Cable tray installation started in compressor area on 29 August.', ground_truth_activity_id: 'A30512', ground_truth_start: '2026-08-29', ground_truth_finish: null, ground_truth_status: 'In Progress', expected_decision: 'HIGH_CONFIDENCE' },
+   281→  { id: 'GT-012', supervisor: 'Suresh Singh', discipline: 'Electrical', input_type: 'text', raw_text: 'Cables pulled through tray C-18, completed 5 September.', ground_truth_activity_id: 'A30515', ground_truth_start: null, ground_truth_finish: '2026-09-05', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   282→  { id: 'GT-013', supervisor: 'Suresh Singh', discipline: 'Electrical', input_type: 'text', raw_text: 'Earthing grid installation in Unit 2 finished.', ground_truth_activity_id: 'A30522', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   283→  { id: 'GT-014', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Welding on Line 25-XX completed on 29 August.', ground_truth_activity_id: 'A10936', ground_truth_start: null, ground_truth_finish: '2026-08-29', ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   284→  { id: 'GT-015', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Pipe support P-201 installed.', ground_truth_activity_id: 'A10937', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   285→  { id: 'GT-016', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Insulation on Line 24-XX completed.', ground_truth_activity_id: 'A10941', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   286→  // Semantic / terminology variation hard negatives
+   287→  { id: 'GT-017', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Line 30-XX ka spool erection ho gaya.', ground_truth_activity_id: 'A10942', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   288→  { id: 'GT-018', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Concrete pedestal P-51 cast.', ground_truth_activity_id: 'A20424', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   289→  { id: 'GT-019', supervisor: 'Suresh Singh', discipline: 'Electrical', input_type: 'text', raw_text: 'Lighting panel LP-2 installed in Unit 2.', ground_truth_activity_id: 'A30517', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   290→  { id: 'GT-020', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Hydrotest of Line 25-XX done.', ground_truth_activity_id: 'A10934', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'HIGH_CONFIDENCE' },
+   291→  // Ambiguous cases (NEEDS_REVIEW)
+   292→  { id: 'GT-021', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Pipe work completed.', ground_truth_activity_id: 'AMBIGUOUS', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'NEEDS_REVIEW' },
+   293→  { id: 'GT-022', supervisor: 'Ramesh Kumar', discipline: 'Piping', input_type: 'text', raw_text: 'Welding completed in Unit 2.', ground_truth_activity_id: 'AMBIGUOUS', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'NEEDS_REVIEW' },
+   294→  { id: 'GT-023', supervisor: 'Suresh Singh', discipline: 'Electrical', input_type: 'text', raw_text: 'Cable work finished.', ground_truth_activity_id: 'AMBIGUOUS', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'NEEDS_REVIEW' },
+   295→  // Unmatched cases
+   296→  { id: 'GT-024', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'New drainage trench completed near Unit 4.', ground_truth_activity_id: 'UNMATCHED', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'UNMATCHED' },
+   297→  { id: 'GT-025', supervisor: 'Amit Verma', discipline: 'Civil', input_type: 'text', raw_text: 'Security cabin foundation cast near main gate.', ground_truth_activity_id: 'UNMATCHED', ground_truth_start: null, ground_truth_finish: null, ground_truth_status: 'Completed', expected_decision: 'UNMATCHED' },
+   298→]
+   299→
+   300→export async function seedDatabase() {
+   301→  // Wipe everything (order matters for FKs; cascade handles most)
+   302→  await db.auditLog.deleteMany()
+   303→  await db.plannerDecision.deleteMany()
+   304→  await db.activityMatch.deleteMany()
+   305→  await db.executionEvent.deleteMany()
+   306→  await db.fieldReport.deleteMany()
+   307→  await db.scheduleActivity.deleteMany()
+   308→  await db.supervisor.deleteMany()
+   309→  await db.project.deleteMany()
+   310→  await db.modelEvaluation.deleteMany()
+   311→
+   312→  const project = await db.project.create({
+   313→    data: {
+   314→      code: 'UNIT4-EXP',
+   315→      name: 'Unit-4 Expansion Project',
+   316→      description:
+   317→        'Representative Primavera/MS Project export. L5/L6 planned activities across Civil, Mechanical, Piping, Electrical and Instrumentation disciplines.',
+   318→      scheduleSource: 'Representative Primavera/MS Project export',
+   319→    },
+   320→  })
+   321→
+   322→  const supervisors = await Promise.all(
+   323→    SUPERVISORS.map((s) =>
+   324→      db.supervisor.create({ data: { name: s.name, role: s.role, discipline: s.discipline } }),
+   325→    ),
+   326→  )
+   327→
+   328→  // Create activities and keep a DTO map for matching
+   329→  const activityDtos: ScheduleActivityDTO[] = []
+   330→  for (const a of ACTIVITIES) {
+   331→    const [
+   332→      activityId,
+   333→      wbs,
+   334→      discipline,
+   335→      location,
+   336→      activityName,
+   337→      workType,
+   338→      identifier,
+   339→      plannedStart,
+   340→      plannedFinish,
+   341→      description,
+   342→    ] = a
+   343→    const searchText = buildSearchText({
+   344→      discipline,
+   345→      wbs,
+   346→      location,
+   347→      workType,
+   348→      identifier,
+   349→      activityName,
+   350→    })
+   351→    const row = await db.scheduleActivity.create({
+   352→      data: {
+   353→        projectId: project.id,
+   354→        activityId,
+   355→        wbs,
+   356→        discipline,
+   357→        activityName,
+   358→        description,
+   359→        location,
+   360→        plannedStart,
+   361→        plannedFinish,
+   362→        actualStart: null,
+   363→        actualFinish: null,
+   364→        status: 'Not Started',
+   365→        searchText,
+   366→      },
+   367→    })
+   368→    activityDtos.push({
+   369→      id: row.id,
+   370→      activityId: row.activityId,
+   371→      wbs: row.wbs,
+   372→      discipline: row.discipline,
+   373→      activityName: row.activityName,
+   374→      description: row.description,
+   375→      location: row.location,
+   376→      plannedStart: row.plannedStart,
+   377→      plannedFinish: row.plannedFinish,
+   378→      actualStart: row.actualStart,
+   379→      actualFinish: row.actualFinish,
+   380→      status: row.status,
+   381→      searchText: row.searchText,
+   382→    })
+   383→  }
+   384→
+   385→  const index = buildIndexFromActivities(activityDtos)
+   386→  const activityByCode = new Map(activityDtos.map((a) => [a.activityId, a]))
+   387→
+   388→  // Demo field reports + resolution
+   389→  for (const r of DEMO_REPORTS) {
+   390→    const supervisor = supervisors[r.supervisorIdx]
+   391→    const report = await db.fieldReport.create({
+   392→      data: {
+   393→        projectId: project.id,
+   394→        supervisorId: supervisor.id,
+   395→        supervisorName: supervisor.name,
+   396→        discipline: supervisor.discipline,
+   397→        inputType: r.inputType,
+   398→        rawContent: r.raw,
+   399→        reportDate: r.reportDate,
+   400→      },
+   401→    })
+   402→
+   403→    const candidates = retrieveCandidates(r.event, activityDtos, index)
+   404→    const verdict = decide(candidates, r.event)
+   405→
+   406→    const executionEvent = await db.executionEvent.create({
+   407→      data: {
+   408→        reportId: report.id,
+   409→        discipline: r.event.discipline ?? '',
+   410→        workType: r.event.workType ?? '',
+   411→        identifier: r.event.identifier ?? '',
+   412→        location: r.event.location ?? '',
+   413→        actualStart: r.event.actualStart,
+   414→        actualFinish: r.event.actualFinish,
+   415→        status: r.event.status ?? '',
+   416→        quantity: r.event.quantity,
+   417→        unit: r.event.unit,
+   418→        evidence: r.event.evidence,
+   419→      },
+   420→    })
+   421→
+   422→    // Persist candidates (top + alternatives)
+   423→    const topMatchRow = candidates[0]
+   424→      ? await db.activityMatch.create({
+   425→          data: {
+   426→            executionEventId: executionEvent.id,
+   427→            activityId: candidates[0].activityId,
+   428→            scheduleActivityRowId: activityByCode.get(candidates[0].activityId)?.id ?? null,
+   429→            semanticScore: candidates[0].signals.semantic,
+   430→            identifierScore: candidates[0].signals.identifier,
+   431→            disciplineScore: candidates[0].signals.discipline,
+   432→            workTypeScore: candidates[0].signals.workType,
+   433→            dateScore: candidates[0].signals.date,
+   434→            finalScore: candidates[0].finalScore,
+   435→            candidateMargin: verdict.candidateMargin,
+   436→            rank: 1,
+   437→            isTop: true,
+   438→            explanation: JSON.stringify(verdict.explanation),
+   439→          },
+   440→        })
+   441→      : null
+   442→
+   443→    for (const c of candidates.slice(1)) {
+   444→      await db.activityMatch.create({
+   445→        data: {
+   446→          executionEventId: executionEvent.id,
+   447→          activityId: c.activityId,
+   448→          scheduleActivityRowId: activityByCode.get(c.activityId)?.id ?? null,
+   449→          semanticScore: c.signals.semantic,
+   450→          identifierScore: c.signals.identifier,
+   451→          disciplineScore: c.signals.discipline,
+   452→          workTypeScore: c.signals.workType,
+   453→          dateScore: c.signals.date,
+   454→          finalScore: c.finalScore,
+   455→          candidateMargin: 0,
+   456→          rank: c.rank,
+   457→          isTop: false,
+   458→          explanation: JSON.stringify(c.explanation),
+   459→        },
+   460→      })
+   461→    }
+   462→
+   463→    await db.auditLog.create({
+   464→      data: {
+   465→        entityType: 'FieldReport',
+   466→        entityId: report.id,
+   467→        action: 'SUBMITTED',
+   468→        actor: supervisor.name,
+   469→        metadata: JSON.stringify({ inputType: r.inputType, discipline: supervisor.discipline }),
+   470→      },
+   471→    })
+   472→    await db.auditLog.create({
+   473→      data: {
+   474→        entityType: 'FieldReport',
+   475→        entityId: report.id,
+   476→        action: 'RESOLVED',
+   477→        actor: 'NEXORA-AI',
+   478→        metadata: JSON.stringify({
+   479→          decision: verdict.decision,
+   480→          selectedActivityId: verdict.selectedActivityId,
+   481→          topScore: verdict.topScore,
+   482→          candidateMargin: verdict.candidateMargin,
+   483→        }),
+   484→      },
+   485→    })
+   486→
+   487→    // Pre-approve a report to demonstrate the schedule update + audit trail
+   488→    if (r.approved && topMatchRow && verdict.selectedActivityId) {
+   489→      const targetActivity = activityByCode.get(verdict.selectedActivityId)
+   490→      if (targetActivity) {
+   491→        const decisionRow = await db.plannerDecision.create({
+   492→          data: {
+   493→            matchId: topMatchRow.id,
+   494→            decision: 'APPROVED',
+   495→            aiSuggestedActivityId: verdict.selectedActivityId,
+   496→            selectedActivityId: verdict.selectedActivityId,
+   497→            scheduleActivityRowId: targetActivity.id,
+   498→            plannerName: r.plannerName ?? 'Arun Sharma',
+   499→            reason: r.reason ?? null,
+   500→          },
+   501→        })
+   502→        await db.scheduleActivity.update({
+   503→          where: { id: targetActivity.id },
+   504→          data: {
+   505→            actualStart: r.event.actualStart,
+   506→            actualFinish: r.event.actualFinish,
+   507→            status:
+   508→              r.event.status === 'Completed'
+   509→                ? 'Completed'
+   510→                : r.event.status === 'In Progress'
+   511→                  ? 'In Progress'
+   512→                  : r.event.status === 'Delayed'
+   513→                    ? 'Delayed'
+   514→                    : 'Completed',
+   515→          },
+   516→        })
+   517→        await db.auditLog.create({
+   518→          data: {
+   519→            entityType: 'PlannerDecision',
+   520→            entityId: decisionRow.id,
+   521→            action: 'APPROVED',
+   522→            actor: r.plannerName ?? 'Arun Sharma',
+   523→            metadata: JSON.stringify({
+   524→              activityId: targetActivity.activityId,
+   525→              activityName: targetActivity.activityName,
+   526→              aiSuggested: verdict.selectedActivityId,
+   527→              selected: verdict.selectedActivityId,
+   528→              actualStart: r.event.actualStart,
+   529→              actualFinish: r.event.actualFinish,
+   530→              status: r.event.status,
+   531→              before: { actualStart: null, actualFinish: null, status: 'Not Started' },
+   532→              after: {
+   533→                actualStart: r.event.actualStart,
+   534→                actualFinish: r.event.actualFinish,
+   535→                status: r.event.status,
+   536→              },
+   537→            }),
+   538→          },
+   539→        })
+   540→        await db.auditLog.create({
+   541→          data: {
+   542→            entityType: 'ScheduleActivity',
+   543→            entityId: targetActivity.id,
+   544→            action: 'UPDATED',
+   545→            actor: r.plannerName ?? 'Arun Sharma',
+   546→            metadata: JSON.stringify({
+   547→              activityId: targetActivity.activityId,
+   548→              actualFinish: r.event.actualFinish,
+   549→              status: r.event.status,
+   550→            }),
+   551→          },
+   552→        })
+   553→      }
+   554→    }
+   555→  }
+   556→
+   557→  return {
+   558→    project: project.code,
+   559→    activities: activityDtos.length,
+   560→    supervisors: supervisors.length,
+   561→    reports: DEMO_REPORTS.length,
+   562→    groundTruth: GROUND_TRUTH.length,
+   563→  }
+   564→}
+   565→
+   566→export function getGroundTruth(): GroundTruthRow[] {
+   567→  return GROUND_TRUTH
+   568→}
+   569→
+   570→export function getActivitiesForEval(): ActivityTuple[] {
+   571→  return ACTIVITIES
+   572→}
+   573→

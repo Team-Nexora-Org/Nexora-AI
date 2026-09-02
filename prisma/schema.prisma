@@ -1,0 +1,187 @@
+// NEXORA — Prisma schema
+// Field-to-Schedule Execution Intelligence Platform (SIH26122 MVP)
+// Adapted from Supabase/PostgreSQL spec to Prisma + SQLite.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Project (a single representative Primavera/MS Project export)
+// ---------------------------------------------------------------------------
+model Project {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g. "UNIT4-EXP"
+  name        String
+  description String
+  scheduleSource String // "Representative Primavera/MS Project export"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  scheduleActivities ScheduleActivity[]
+  fieldReports       FieldReport[]
+}
+
+// ---------------------------------------------------------------------------
+// Supervisors (field reporters)
+// ---------------------------------------------------------------------------
+model Supervisor {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   // e.g. "Piping Supervisor"
+  discipline  String   // Civil | Mechanical | Piping | Electrical | Instrumentation
+  createdAt   DateTime @default(now())
+
+  fieldReports FieldReport[]
+}
+
+// ---------------------------------------------------------------------------
+// Schedule Activity (L5/L6 planned activities from the imported schedule)
+// ---------------------------------------------------------------------------
+model ScheduleActivity {
+  id            String   @id @default(cuid())
+  projectId     String
+  activityId    String   // e.g. "A10931"
+  wbs           String   // e.g. "PIP-03"
+  discipline    String
+  activityName  String
+  description   String
+  location      String
+  plannedStart  String   // ISO date
+  plannedFinish String   // ISO date
+  actualStart   String?
+  actualFinish  String?
+  status        String   // Not Started | In Progress | Completed | Delayed
+  searchText    String   // "Piping | PIP-03 | Unit 2 | Spool Erection | Line 24-XX | Erect Spool Line 24-XX"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activityMatches ActivityMatch[]
+  plannerDecisions PlannerDecision[]
+
+  @@unique([projectId, activityId])
+  @@index([discipline])
+}
+
+// ---------------------------------------------------------------------------
+// Field Report (raw input from a supervisor: text / voice-transcript / file)
+// ---------------------------------------------------------------------------
+model FieldReport {
+  id            String   @id @default(cuid())
+  projectId     String
+  supervisorId  String
+  supervisorName String
+  discipline    String
+  inputType     String   // text | voice | excel | csv | pdf
+  rawContent    String
+  fileUrl       String?
+  reportDate    String   // ISO date
+  createdAt     DateTime @default(now())
+
+  project       Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  supervisor    Supervisor  @relation(fields: [supervisorId], references: [id], onDelete: Cascade)
+  executionEvent ExecutionEvent?
+}
+
+// ---------------------------------------------------------------------------
+// Execution Event (structured extraction result)
+// ---------------------------------------------------------------------------
+model ExecutionEvent {
+  id            String   @id @default(cuid())
+  reportId      String   @unique
+  discipline    String
+  workType      String
+  identifier    String
+  location      String?
+  actualStart   String?
+  actualFinish  String?
+  status        String?
+  quantity      String?
+  unit          String?
+  evidence      String?
+  createdAt     DateTime @default(now())
+
+  report        FieldReport   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  activityMatches ActivityMatch[]
+}
+
+// ---------------------------------------------------------------------------
+// Activity Match (candidates produced by the AI pipeline for an event)
+// ---------------------------------------------------------------------------
+model ActivityMatch {
+  id              String   @id @default(cuid())
+  executionEventId String
+  activityId      String   // references ScheduleActivity.activityId (validated)
+  scheduleActivityRowId String? // FK to ScheduleActivity.id (validated server-side)
+  semanticScore    Float
+  identifierScore  Float
+  disciplineScore   Float
+  workTypeScore    Float
+  dateScore        Float
+  finalScore       Float
+  candidateMargin  Float
+  rank             Int
+  isTop            Boolean  @default(false)
+  explanation      String   // JSON string of explanation lines
+  createdAt        DateTime @default(now())
+
+  executionEvent   ExecutionEvent @relation(fields: [executionEventId], references: [id], onDelete: Cascade)
+  scheduleActivity ScheduleActivity? @relation(fields: [scheduleActivityRowId], references: [id], onDelete: SetNull)
+  plannerDecision  PlannerDecision?
+}
+
+// ---------------------------------------------------------------------------
+// Planner Decision (approve / change / reject) — human-in-the-loop
+// ---------------------------------------------------------------------------
+model PlannerDecision {
+  id                String   @id @default(cuid())
+  matchId           String   @unique
+  decision          String   // APPROVED | CHANGED | REJECTED
+  aiSuggestedActivityId String?
+  selectedActivityId String? // validated against schedule_activities
+  scheduleActivityRowId String?
+  plannerName       String
+  reason            String?
+  createdAt         DateTime @default(now())
+
+  match             ActivityMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  scheduleActivity  ScheduleActivity? @relation(fields: [scheduleActivityRowId], references: [id], onDelete: SetNull)
+}
+
+// ---------------------------------------------------------------------------
+// Audit Log (immutable trail of every meaningful action)
+// ---------------------------------------------------------------------------
+model AuditLog {
+  id          String   @id @default(cuid())
+  entityType  String   // FieldReport | ScheduleActivity | PlannerDecision | ...
+  entityId    String
+  action      String   // SUBMITTED | RESOLVED | APPROVED | CHANGED | REJECTED | SEEDED | RESET
+  actor       String   // supervisor name or planner name or "system"
+  metadata    String   // JSON string
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
+
+// ---------------------------------------------------------------------------
+// Model Evaluation (baseline vs NEXORA comparison)
+// ---------------------------------------------------------------------------
+model ModelEvaluation {
+  id              String   @id @default(cuid())
+  label           String   // "baseline" | "nexora"
+  total           Int
+  top1Accuracy    Float
+  top3Recall      Float
+  highConfidencePrecision Float
+  falseAutoLinkRate Float
+  ambiguousDetected Int
+  unmatchedDetected Int
+  metricsJson     String   // full detail
+  createdAt       DateTime @default(now())
+}

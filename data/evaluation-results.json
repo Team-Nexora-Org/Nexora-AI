@@ -1,0 +1,22 @@
+{
+  "baseline": {
+    "label": "baseline",
+    "total": 25,
+    "top1Accuracy": 0.8,
+    "top3Recall": 0.95,
+    "highConfidencePrecision": 0.625,
+    "falseAutoLinkRate": 0.36,
+    "ambiguousDetected": 0,
+    "unmatchedDetected": 0
+  },
+  "nexora": {
+    "label": "nexora",
+    "total": 25,
+    "top1Accuracy": 0.85,
+    "top3Recall": 0.95,
+    "highConfidencePrecision": 1,
+    "falseAutoLinkRate": 0,
+    "ambiguousDetected": 3,
+    "unmatchedDetected": 1
+  }
+}
