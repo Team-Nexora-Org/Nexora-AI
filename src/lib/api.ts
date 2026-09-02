@@ -92,6 +92,14 @@ export const api = {
     }>(fetch('/api/reports/upload', { method: 'POST', body: form }))
   },
 
+  transcribe: (blob: Blob, filename = 'recording.webm') => {
+    const form = new FormData()
+    form.append('file', new File([blob], filename, { type: blob.type || 'audio/webm' }))
+    return jsonOrThrow<{ ok: boolean; text: string }>(
+      fetch('/api/transcribe', { method: 'POST', body: form }),
+    )
+  },
+
   inbox: () => jsonOrThrow<{ items: PlannerInboxItem[] }>(fetch('/api/planner/inbox')),
 
   review: (id: string) =>

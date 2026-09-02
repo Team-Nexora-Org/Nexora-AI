@@ -89,6 +89,7 @@ export function SupervisorHome() {
   // Voice mode
   const [transcript, setTranscript] = useState('')
   const [recording, setRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const [seconds, setSeconds] = useState(0)
   const [micError, setMicError] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -213,6 +214,11 @@ export function SupervisorHome() {
             streamRef.current = null
           }
           mediaRecorderRef.current = null
+          if (audioChunksRef.current.length) {
+            const blob = new Blob(audioChunksRef.current, { type: mr.mimeType })
+            audioChunksRef.current = []
+            transcriptRecording(blob)
+          }
         }
         mr.start()
         mediaRecorderRef.current = mr
@@ -223,6 +229,19 @@ export function SupervisorHome() {
       .catch(() => {
         setMicError('Microphone permission denied. Use the demo transcript below.')
       })
+  }
+
+  async function transcriptRecording(blob: Blob) {
+    setTranscribing(true)
+    const ext = blob.type.includes('mp4') ? 'mp4' : 'webm'
+    try {
+      const r = await api.transcribe(blob, `recording.${ext}`)
+      if (r.text.trim()) setTranscript(r.text)
+    } catch (e) {
+      toast.error((e as Error).message || 'Could not transcribe audio. Please type or use a demo transcript.')
+    } finally {
+      setTranscribing(false)
+    }
   }
 
   function stopRecording() {
@@ -333,6 +352,7 @@ export function SupervisorHome() {
           transcript={transcript}
           setTranscript={setTranscript}
           recording={recording}
+          transcribing={transcribing}
           seconds={seconds}
           micError={micError}
           mediaSupported={mediaSupported}
@@ -403,6 +423,7 @@ function VoiceForm({
   transcript,
   setTranscript,
   recording,
+  transcribing,
   seconds,
   micError,
   mediaSupported,
@@ -414,6 +435,7 @@ function VoiceForm({
   transcript: string
   setTranscript: (v: string) => void
   recording: boolean
+  transcribing: boolean
   seconds: number
   micError: string | null
   mediaSupported: boolean
@@ -444,6 +466,19 @@ function VoiceForm({
               Stop
             </Button>
           </div>
+        ) : transcribing ? (
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="h-3 w-3 animate-pulse rounded-full bg-sky-500"
+            />
+            <div>
+              <p className="text-sm font-medium text-slate-900">Transcribing…</p>
+              <p className="text-xs text-slate-500">
+                Converting your recording to text.
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="flex items-center gap-3">
             <Button
@@ -473,12 +508,12 @@ function VoiceForm({
         </p>
       )}
 
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-        Demo transcript mode — voice transport is mocked; the AI resolution is real.
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        Recorded speech is transcribed automatically (Groq whisper). Review and edit below before submitting.
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={onUseDemo}>
+        <Button type="button" variant="outline" size="sm" onClick={onUseDemo} disabled={transcribing}>
           Use a demo transcript
         </Button>
       </div>
@@ -486,7 +521,7 @@ function VoiceForm({
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          onSubmit()
+          if (!transcribing) onSubmit()
         }}
         className="space-y-3"
       >
@@ -501,7 +536,7 @@ function VoiceForm({
           className="min-h-[120px] resize-y"
         />
         <div className="flex justify-end">
-          <Button type="submit" disabled={!transcript.trim()}>
+          <Button type="submit" disabled={!transcript.trim() || transcribing}>
             <Mic className="h-4 w-4" />
             Submit transcript
           </Button>

@@ -29,6 +29,7 @@ Production, Preview, and Development):
 |----------------|-------------------------------------------------------------------------------------------------------------------|
 | `DATABASE_URL` | Supabase **pooler** connection string (port `6543`, `?pgbouncer=true`) e.g. from `.env`                           |
 | `DIRECT_URL`   | Supabase **direct** connection string (port `5432`) e.g. from `.env`                                             |
+| `GROQ_API_KEY` | API key for Groq speech-to-text (`whisper-large-v3-turbo`) used by `POST /api/transcribe`. If missing, voice recording falls back to manual/demo-transcript entry. |
 | `ZAI_KEY`      | (optional) API key for `z-ai-web-dev-sdk`. The extractor falls back to a deterministic heuristic if this is missing, so the demo still works without it. |
 
 > `.env` is gitignored — never commit it. The production values must be entered
