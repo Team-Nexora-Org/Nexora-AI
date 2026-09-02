@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
-    "start": "NODE_ENV=production node .next/standalone/server.js 2>&1 | tee server.log",
+    "prebuild": "prisma generate",
+    "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && next build",
+    "postinstall": "prisma generate",
+    "start": "NODE_ENV=production next start",
     "lint": "eslint .",
     "seed": "npx tsx scripts/seed.ts",
     "demo:reset": "npx tsx scripts/seed.ts",
