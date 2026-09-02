@@ -9,16 +9,16 @@ const DECISION_STYLES: Record<string, string> = {
 }
 
 const ACTION_STYLES: Record<string, string> = {
-  APPROVED: 'bg-emerald-600 text-white border-emerald-600',
-  CHANGED: 'bg-sky-700 text-white border-sky-700',
-  REJECTED: 'bg-rose-600 text-white border-rose-600',
+  APPROVED: 'bg-emerald-600 text-foreground border-emerald-600',
+  CHANGED: 'bg-sky-700 text-foreground border-sky-700',
+  REJECTED: 'bg-rose-600 text-foreground border-rose-600',
 }
 
 const STATUS_STYLES: Record<string, string> = {
   Completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   'In Progress': 'bg-amber-50 text-amber-700 border-amber-200',
   Delayed: 'bg-rose-50 text-rose-700 border-rose-200',
-  'Not Started': 'bg-slate-100 text-slate-600 border-slate-200',
+  'Not Started': 'bg-muted text-muted-foreground border-border',
 }
 
 export function DecisionBadge({ value, className }: { value: string | null; className?: string }) {
@@ -28,7 +28,7 @@ export function DecisionBadge({ value, className }: { value: string | null; clas
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold uppercase tracking-wide',
-        DECISION_STYLES[value] ?? 'bg-slate-100 text-slate-600 border-slate-200',
+        DECISION_STYLES[value] ?? 'bg-muted text-muted-foreground border-border',
         className,
       )}
     >
@@ -46,7 +46,7 @@ export function ActionBadge({ value, className }: { value: string | null; classN
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold uppercase tracking-wide',
-        ACTION_STYLES[value] ?? 'bg-slate-100 text-slate-600 border-slate-200',
+        ACTION_STYLES[value] ?? 'bg-muted text-muted-foreground border-border',
         className,
       )}
     >
@@ -61,7 +61,7 @@ export function StatusBadge({ value, className }: { value: string | null; classN
     <span
       className={cn(
         'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium',
-        STATUS_STYLES[value] ?? 'bg-slate-100 text-slate-600 border-slate-200',
+        STATUS_STYLES[value] ?? 'bg-muted text-muted-foreground border-border',
         className,
       )}
     >

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/lib/api'
 import { useApp } from '@/lib/store'
 import { HardHat, ClipboardList, ArrowRight, Loader2 } from 'lucide-react'
+import { ConstructionLandscape } from '@/components/shared/ConstructionLandscape'
 
 export function Login() {
   const setRole = useApp((s) => s.setRole)
@@ -54,35 +55,37 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-slate-50 to-white">
-      <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 py-12">
+    <div className="relative min-h-screen w-full bg-background overflow-hidden">
+      <ConstructionLandscape />
+      
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 py-12 pb-32">
         <div className="mb-8 flex flex-col items-center text-center">
           <Brand size="lg" sub={false} />
-          <h1 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+          <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Field-to-Schedule Execution Intelligence
           </h1>
-          <p className="mt-3 max-w-2xl text-sm text-slate-500 sm:text-base">
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
             The project schedule knows what was planned. The field knows what actually happened.
-            <span className="font-medium text-slate-700"> NEXORA is the intelligent bridge between them.</span>
+            <span className="font-medium text-foreground"> NEXORA is the intelligent bridge between them.</span>
           </p>
         </div>
 
         <div className="flex w-full justify-center">
           {selectedRole === null && (
             <div className="w-full max-w-md">
-              <Card className="overflow-hidden border-slate-200 shadow-sm">
-                <CardHeader className="bg-slate-900 pb-4 text-white">
+              <Card className="overflow-hidden border-border shadow-sm">
+                <CardHeader className="bg-background pb-4 text-foreground">
                   <div className="flex items-center gap-2">
                     <ClipboardList className="h-5 w-5 text-amber-400" />
                     <CardTitle className="text-base">Role Selection</CardTitle>
                   </div>
-                  <CardDescription className="text-slate-300">
+                  <CardDescription className="text-muted-foreground">
                     Please select your role to continue.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Select your role
                     </label>
                     <Select value={tempRole} onValueChange={(v) => setTempRole(v as 'supervisor' | 'planner')}>
@@ -112,23 +115,23 @@ export function Login() {
             <div className="w-full max-w-md">
               <button 
                 onClick={() => setSelectedRole(null)}
-                className="mb-3 flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                className="mb-3 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 &larr; Back to role selection
               </button>
-              <Card className="overflow-hidden border-slate-200 shadow-sm">
-                <CardHeader className="bg-slate-900 pb-4 text-white">
+              <Card className="overflow-hidden border-border shadow-sm">
+                <CardHeader className="bg-background pb-4 text-foreground">
                   <div className="flex items-center gap-2">
                     <HardHat className="h-5 w-5 text-amber-400" />
                     <CardTitle className="text-base">Supervisor</CardTitle>
                   </div>
-                  <CardDescription className="text-slate-300">
+                  <CardDescription className="text-muted-foreground">
                     Just tell us what happened.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Demo profile
                     </label>
                     <Select value={selectedSupervisor} onValueChange={setSelectedSupervisor}>
@@ -158,31 +161,31 @@ export function Login() {
             <div className="w-full max-w-md">
               <button 
                 onClick={() => setSelectedRole(null)}
-                className="mb-3 flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                className="mb-3 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 &larr; Back to role selection
               </button>
-              <Card className="overflow-hidden border-slate-200 shadow-sm">
-                <CardHeader className="bg-slate-800 pb-4 text-white">
+              <Card className="overflow-hidden border-border shadow-sm">
+                <CardHeader className="bg-card pb-4 text-foreground">
                   <div className="flex items-center gap-2">
                     <ClipboardList className="h-5 w-5 text-amber-400" />
                     <CardTitle className="text-base">Project Planner</CardTitle>
                   </div>
-                  <CardDescription className="text-slate-300">
+                  <CardDescription className="text-muted-foreground">
                     Review decisions, not raw reports.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-5">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Demo profile
                     </label>
-                    <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm">
-                      <div className="font-medium text-slate-800">Arun Sharma</div>
-                      <div className="text-xs text-slate-500">Project Planner — Unit-4 Expansion Project</div>
+                    <div className="rounded-md border border-border bg-muted px-3 py-2.5 text-sm">
+                      <div className="font-medium text-foreground">Arun Sharma</div>
+                      <div className="text-xs text-muted-foreground">Project Planner — Unit-4 Expansion Project</div>
                     </div>
                   </div>
-                  <Button variant="secondary" className="w-full bg-slate-800 text-white hover:bg-slate-700" onClick={loginPlanner} disabled={busy !== null}>
+                  <Button variant="secondary" className="w-full bg-card text-foreground hover:bg-muted" onClick={loginPlanner} disabled={busy !== null}>
                     {busy === 'planner' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Continue as Project Planner
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -197,7 +200,7 @@ export function Login() {
           <p className="mt-6 text-sm text-rose-600">{error}</p>
         )}
 
-        <p className="mt-10 max-w-2xl text-center text-xs text-slate-400">
+        <p className="mt-10 max-w-2xl text-center text-xs text-muted-foreground">
           Mock authentication for the SIH prototype — swappable for Supabase Auth in production.
           Schedule source: representative Primavera / MS Project export.
         </p>

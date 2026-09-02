@@ -20,7 +20,7 @@ export function Brand({
     <div className={cn('flex items-center gap-2.5', className)}>
       <div
         className={cn(
-          'grid place-items-center rounded-md bg-slate-900 text-amber-400 shadow-sm',
+          'grid place-items-center rounded-md bg-background text-amber-400 shadow-sm',
           sizes.mark,
         )}
         aria-hidden
@@ -32,9 +32,9 @@ export function Brand({
         </svg>
       </div>
       <div className="leading-tight">
-        <div className={cn('font-semibold tracking-tight text-slate-900', sizes.title)}>NEXORA</div>
+        <div className={cn('font-semibold tracking-tight text-foreground', sizes.title)}>NEXORA</div>
         {sub && (
-          <div className={cn('uppercase tracking-[0.16em] text-slate-400', sizes.sub)}>
+          <div className={cn('uppercase tracking-[0.16em] text-muted-foreground', sizes.sub)}>
             Field-to-Schedule Intelligence
           </div>
         )}

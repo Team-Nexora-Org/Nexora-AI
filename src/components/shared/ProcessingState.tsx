@@ -44,13 +44,13 @@ export function ProcessingState({
 
   if (!active) return null
   return (
-    <div className={cn('rounded-lg border border-slate-200 bg-slate-50 p-5', className)}>
+    <div className={cn('rounded-lg border border-border bg-muted p-5', className)}>
       <div className="flex items-center gap-3">
         <span
           aria-hidden
           className="h-2.5 w-2.5 animate-pulse rounded-full bg-amber-500"
         />
-        <p className="text-sm font-medium text-slate-700">
+        <p className="text-sm font-medium text-foreground">
           {message ?? STEPS[step]}
         </p>
       </div>
@@ -60,8 +60,8 @@ export function ProcessingState({
             key={s}
             className={cn(
               'flex items-center gap-2 text-xs',
-              i < step && 'text-slate-400',
-              i === step && 'text-slate-800 font-medium',
+              i < step && 'text-muted-foreground',
+              i === step && 'text-foreground font-medium',
               i > step && 'text-slate-300',
             )}
           >

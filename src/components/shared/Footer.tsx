@@ -26,18 +26,18 @@ export function Footer() {
   }
 
   return (
-    <footer className="mt-auto border-t border-slate-200 bg-white">
+    <footer className="mt-auto border-t border-border bg-card">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-4 sm:flex-row">
         <div className="flex items-center gap-3">
           <Brand size="sm" sub={false} />
-          <span className="hidden text-xs text-slate-400 sm:inline">
+          <span className="hidden text-xs text-muted-foreground sm:inline">
             · Field-to-Schedule Execution Intelligence · SIH26122 MVP
           </span>
         </div>
         <div className="flex items-center gap-2">
           {role && (
-            <span className="text-xs text-slate-500">
-              Signed in as <span className="font-medium text-slate-700">{role.name}</span> · {role.role}
+            <span className="text-xs text-muted-foreground">
+              Signed in as <span className="font-medium text-foreground">{role.name}</span> · {role.role}
             </span>
           )}
           <Button
@@ -45,7 +45,7 @@ export function Footer() {
             size="sm"
             onClick={resetDemo}
             disabled={resetting}
-            className="text-xs text-slate-500 hover:text-slate-700"
+            className="text-xs text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
             Reset Demo
@@ -55,7 +55,7 @@ export function Footer() {
               variant="ghost"
               size="sm"
               onClick={async () => { await api.logout(); logout() }}
-              className="text-xs text-slate-500 hover:text-slate-700"
+              className="text-xs text-muted-foreground hover:text-foreground"
             >
               <LogOut className="mr-1.5 h-3.5 w-3.5" />
               Sign out

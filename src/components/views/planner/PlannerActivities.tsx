@@ -84,10 +84,10 @@ export function PlannerActivities() {
   return (
     <div className="space-y-5">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Schedule
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           The source of truth — 75 planned activities across 5 disciplines.
         </p>
       </header>
@@ -119,7 +119,7 @@ export function PlannerActivities() {
           </SelectContent>
         </Select>
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -129,7 +129,7 @@ export function PlannerActivities() {
         </div>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted-foreground">
         {!loading && !error && (
           <span className="tabular-nums">
             {activities.length} activit{activities.length === 1 ? 'y' : 'ies'}
@@ -191,57 +191,57 @@ export function PlannerActivities() {
       )}
 
       {!error && !loading && activities.length > 0 && (
-        <Card className="border-slate-200 py-0">
+        <Card className="border-border py-0">
           <div className="max-h-[70vh] overflow-auto" style={{ scrollbarWidth: 'thin' }}>
             <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white">
-                <TableRow className="border-b border-slate-200">
-                  <TableHead className="w-20 text-xs uppercase tracking-wide text-slate-500">Activity</TableHead>
-                  <TableHead className="w-20 text-xs uppercase tracking-wide text-slate-500">WBS</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Discipline</TableHead>
-                  <TableHead className="min-w-48 text-xs uppercase tracking-wide text-slate-500">Activity</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Location</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Planned</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Actual</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Status</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wide text-slate-500">Variance</TableHead>
+              <TableHeader className="sticky top-0 z-10 bg-card">
+                <TableRow className="border-b border-border">
+                  <TableHead className="w-20 text-xs uppercase tracking-wide text-muted-foreground">Activity</TableHead>
+                  <TableHead className="w-20 text-xs uppercase tracking-wide text-muted-foreground">WBS</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Discipline</TableHead>
+                  <TableHead className="min-w-48 text-xs uppercase tracking-wide text-muted-foreground">Activity</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Location</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Planned</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Actual</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Variance</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {activities.map((a) => (
                   <TableRow key={a.id} className="text-xs">
                     <TableCell>
-                      <span className="font-mono text-xs font-semibold text-slate-900">
+                      <span className="font-mono text-xs font-semibold text-foreground">
                         {a.activityId}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="font-mono text-xs text-slate-600">{a.wbs}</span>
+                      <span className="font-mono text-xs text-muted-foreground">{a.wbs}</span>
                     </TableCell>
                     <TableCell>
                       <DisciplineTag value={a.discipline} />
                     </TableCell>
                     <TableCell>
-                      <p className="text-xs text-slate-800">{a.activityName}</p>
+                      <p className="text-xs text-foreground">{a.activityName}</p>
                       {a.description && (
-                        <p className="line-clamp-1 text-[11px] text-slate-500">
+                        <p className="line-clamp-1 text-[11px] text-muted-foreground">
                           {a.description}
                         </p>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-slate-600">{a.location}</TableCell>
-                    <TableCell className="tabular-nums text-slate-700">
+                    <TableCell className="text-xs text-muted-foreground">{a.location}</TableCell>
+                    <TableCell className="tabular-nums text-foreground">
                       <span className="block">{fmt(a.plannedStart)}</span>
-                      <span className="block text-slate-400">→ {fmt(a.plannedFinish)}</span>
+                      <span className="block text-muted-foreground">→ {fmt(a.plannedFinish)}</span>
                     </TableCell>
-                    <TableCell className="tabular-nums text-slate-700">
+                    <TableCell className="tabular-nums text-foreground">
                       {a.actualStart || a.actualFinish ? (
                         <>
                           <span className="block">{fmt(a.actualStart)}</span>
-                          <span className="block text-slate-400">→ {fmt(a.actualFinish)}</span>
+                          <span className="block text-muted-foreground">→ {fmt(a.actualFinish)}</span>
                         </>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -266,9 +266,9 @@ export function PlannerActivities() {
 
 function ScheduleSkeleton() {
   return (
-    <Card className="border-slate-200 py-0">
+    <Card className="border-border py-0">
       <div className="space-y-0">
-        <div className="border-b border-slate-200 px-3 py-2">
+        <div className="border-b border-border px-3 py-2">
           <div className="flex gap-3">
             {Array.from({ length: 9 }).map((_, i) => (
               <Skeleton key={i} className="h-3 w-16" />

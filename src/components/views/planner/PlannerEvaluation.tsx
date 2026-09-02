@@ -28,10 +28,10 @@ function MetricRow({ label, value, hint }: { label: string; value: string; hint?
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-slate-100 py-2 last:border-b-0">
       <div className="min-w-0">
-        <p className="text-xs font-medium text-slate-700">{label}</p>
-        {hint && <p className="text-[11px] text-slate-400">{hint}</p>}
+        <p className="text-xs font-medium text-foreground">{label}</p>
+        {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
       </div>
-      <p className="font-mono text-sm font-semibold tabular-nums text-slate-900">{value}</p>
+      <p className="font-mono text-sm font-semibold tabular-nums text-foreground">{value}</p>
     </div>
   )
 }
@@ -85,10 +85,10 @@ export function PlannerEvaluation() {
   return (
     <div className="space-y-5">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Model Evaluation
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Baseline keyword matching vs NEXORA semantic+contextual matching over 25
           ground-truth field reports.
         </p>
@@ -129,8 +129,8 @@ export function PlannerEvaluation() {
 
       {!loading && !error && (baseline || nexora) && (
         <>
-          <div className="flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-            <p className="text-xs text-slate-600">
+          <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted px-3 py-2">
+            <p className="text-xs text-muted-foreground">
               Baseline run over{' '}
               <span className="font-mono font-medium tabular-nums">
                 {(nexora ?? baseline)?.total ?? 25}
@@ -161,12 +161,12 @@ export function PlannerEvaluation() {
           </div>
 
           {/* Reading the numbers */}
-          <Card className="border-slate-200">
+          <Card className="border-border">
             <CardContent className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Reading the numbers
               </p>
-              <p className="text-sm leading-relaxed text-slate-700">
+              <p className="text-sm leading-relaxed text-foreground">
                 <span className="font-medium">False auto-link rate</span> = the share of
                 reports the matcher auto-linked to an activity when it should have asked
                 for review (ambiguous / unmatched). NEXORA is optimized for{' '}
@@ -175,7 +175,7 @@ export function PlannerEvaluation() {
                 evidence is insufficient.
               </p>
               {nexora && (
-                <ul className="ml-1 space-y-1.5 pt-1 text-sm text-slate-700">
+                <ul className="ml-1 space-y-1.5 pt-1 text-sm text-foreground">
                   {nexora.falseAutoLinkRate === 0 && (
                     <li className="flex items-start gap-2">
                       <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
@@ -205,7 +205,7 @@ export function PlannerEvaluation() {
                   )}
                 </ul>
               )}
-              <p className="pt-2 text-[11px] text-slate-400">
+              <p className="pt-2 text-[11px] text-muted-foreground">
                 Evaluation uses the deterministic heuristic extractor to keep the
                 comparison reproducible; the live supervisor flow uses the LLM
                 extractor. The matching stage — the differentiator — is identical.
@@ -230,13 +230,13 @@ function MetricCard({
   return (
     <Card
       className={cn(
-        'border-slate-200',
+        'border-border',
         recommended && 'border-emerald-300 ring-1 ring-emerald-200',
       )}
     >
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-foreground">
             {label}
           </h3>
           {recommended && (
@@ -246,7 +246,7 @@ function MetricCard({
             </span>
           )}
         </div>
-        <p className="text-[11px] text-slate-400">
+        <p className="text-[11px] text-muted-foreground">
           Over <span className="font-mono tabular-nums">{metrics.total}</span> ground-truth reports
         </p>
         <div>
@@ -292,7 +292,7 @@ function EvalSkeleton() {
       <Skeleton className="h-10 w-full rounded-md" />
       <div className="grid gap-4 md:grid-cols-2">
         {[0, 1].map((i) => (
-          <Card key={i} className="border-slate-200">
+          <Card key={i} className="border-border">
             <CardContent className="space-y-3">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-3 w-40" />

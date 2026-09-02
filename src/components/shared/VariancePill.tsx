@@ -20,7 +20,7 @@ export function VariancePill({
   className?: string
 }) {
   const v = varianceDays(plannedFinish, actualFinish)
-  if (v === null) return <span className={cn('text-xs text-slate-400', className)}>—</span>
+  if (v === null) return <span className={cn('text-xs text-muted-foreground', className)}>—</span>
   if (v === 0)
     return (
       <span className={cn('inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700', className)}>

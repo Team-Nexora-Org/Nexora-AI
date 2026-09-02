@@ -68,8 +68,8 @@ export default function Page() {
 
   if (!hydrated) {
     return (
-      <div className="grid min-h-screen place-items-center bg-slate-50">
-        <div className="flex flex-col items-center gap-3 text-slate-500">
+      <div className="grid min-h-screen place-items-center bg-muted">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
           <p className="text-sm">Loading NEXORA…</p>
         </div>
@@ -87,7 +87,7 @@ export default function Page() {
   const effectiveView: View = isInRoleViews ? view : role.type === 'supervisor' ? 'supervisor-home' : 'planner-inbox'
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
+    <div className="flex min-h-screen flex-col bg-muted text-foreground">
       {role.type === 'supervisor' ? (
         <SupervisorShell
           view={effectiveView}
@@ -158,13 +158,13 @@ function SupervisorShell({
 }) {
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <Brand size="sm" />
           <div className="flex items-center gap-2 text-right">
             <div className="hidden leading-tight sm:block">
-              <div className="text-sm font-medium text-slate-800">{role.name}</div>
-              <div className="text-[11px] text-slate-500">{role.role}</div>
+              <div className="text-sm font-medium text-foreground">{role.name}</div>
+              <div className="text-[11px] text-muted-foreground">{role.role}</div>
             </div>
             <div className="grid h-8 w-8 place-items-center rounded-full bg-amber-100 text-amber-700">
               <HardHat className="h-4 w-4" />
@@ -174,7 +174,7 @@ function SupervisorShell({
       </header>
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       {/* Mobile bottom nav */}
-      <nav className="sticky bottom-0 z-20 border-t border-slate-200 bg-white sm:hidden">
+      <nav className="sticky bottom-0 z-20 border-t border-border bg-card sm:hidden">
         <div className="flex">
           {SUPERVISOR_NAV.map((n) => {
             const Icon = n.icon
@@ -185,7 +185,7 @@ function SupervisorShell({
                 onClick={() => onNav(n.view)}
                 className={cn(
                   'flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium',
-                  active ? 'text-slate-900' : 'text-slate-400',
+                  active ? 'text-foreground' : 'text-muted-foreground',
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -216,18 +216,18 @@ function PlannerShell({
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1">
       {/* Sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-slate-900 text-slate-300 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-background text-slate-300 md:flex">
         <div className="flex items-center justify-between px-5 py-4">
-          <Brand size="sm" className="[&_div]:text-white" />
+          <Brand size="sm" className="[&_div]:text-foreground" />
         </div>
         <div className="px-3 py-2">
-          <div className="flex items-center gap-2 rounded-md bg-slate-800/60 px-3 py-2">
+          <div className="flex items-center gap-2 rounded-md bg-card/60 px-3 py-2">
             <div className="grid h-8 w-8 place-items-center rounded-full bg-amber-100 text-amber-700">
               <ClipboardList className="h-4 w-4" />
             </div>
             <div className="leading-tight">
-              <div className="text-sm font-medium text-white">{role.name}</div>
-              <div className="text-[11px] text-slate-400">{role.role}</div>
+              <div className="text-sm font-medium text-foreground">{role.name}</div>
+              <div className="text-[11px] text-muted-foreground">{role.role}</div>
             </div>
           </div>
         </div>
@@ -241,7 +241,7 @@ function PlannerShell({
                 onClick={() => onNav(n.view)}
                 className={cn(
                   'flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  active ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200',
+                  active ? 'bg-card text-foreground' : 'text-muted-foreground hover:bg-card/50 hover:text-slate-200',
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -250,12 +250,12 @@ function PlannerShell({
             )
           })}
         </nav>
-        <div className="border-t border-slate-800 p-3">
+        <div className="border-t border-border p-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={onLogout}
-            className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="w-full justify-start text-muted-foreground hover:bg-card hover:text-slate-200"
           >
             <LogOut className="mr-2 h-4 w-4" />
             Sign out
@@ -265,19 +265,19 @@ function PlannerShell({
 
       {/* Mobile top bar */}
       <div className="flex flex-1 flex-col md:hidden">
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-slate-900 px-4 py-3 text-white">
-          <Brand size="sm" className="[&_div]:text-white" />
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3 text-foreground">
+          <Brand size="sm" className="[&_div]:text-foreground" />
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setMobileNavOpen((v) => !v)}
-            className="text-slate-300 hover:bg-slate-800"
+            className="text-slate-300 hover:bg-card"
           >
             Menu
           </Button>
         </header>
         {mobileNavOpen && (
-          <nav className="space-y-1 border-b border-slate-200 bg-white p-2">
+          <nav className="space-y-1 border-b border-border bg-card p-2">
             {PLANNER_NAV.map((n) => {
               const Icon = n.icon
               const active = view === n.view
@@ -287,7 +287,7 @@ function PlannerShell({
                   onClick={() => { onNav(n.view); setMobileNavOpen(false) }}
                   className={cn(
                     'flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium',
-                    active ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50',
+                    active ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted',
                   )}
                 >
                   <Icon className="h-4 w-4" />

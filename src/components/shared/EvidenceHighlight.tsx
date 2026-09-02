@@ -14,12 +14,12 @@ export function EvidenceHighlight({
   className?: string
 }) {
   if (!evidence) {
-    return <p className={cn('whitespace-pre-wrap text-sm text-slate-700', className)}>{raw}</p>
+    return <p className={cn('whitespace-pre-wrap text-sm text-foreground', className)}>{raw}</p>
   }
   const idx = raw.toLowerCase().indexOf(evidence.toLowerCase().slice(0, 24))
   if (idx === -1) {
     return (
-      <p className={cn('whitespace-pre-wrap text-sm text-slate-700', className)}>
+      <p className={cn('whitespace-pre-wrap text-sm text-foreground', className)}>
         {raw}
       </p>
     )
@@ -28,9 +28,9 @@ export function EvidenceHighlight({
   const mid = raw.slice(idx, idx + evidence.length)
   const after = raw.slice(idx + evidence.length)
   return (
-    <p className={cn('whitespace-pre-wrap text-sm leading-relaxed text-slate-700', className)}>
+    <p className={cn('whitespace-pre-wrap text-sm leading-relaxed text-foreground', className)}>
       {before}
-      <mark className="rounded bg-amber-200/70 px-0.5 font-medium text-slate-900">{mid}</mark>
+      <mark className="rounded bg-amber-200/70 px-0.5 font-medium text-foreground">{mid}</mark>
       {after}
     </p>
   )

@@ -73,7 +73,7 @@ function formatSeconds(total: number): string {
 }
 
 function Dash() {
-  return <span className="text-slate-400">—</span>
+  return <span className="text-muted-foreground">—</span>
 }
 
 export function SupervisorHome() {
@@ -275,13 +275,13 @@ export function SupervisorHome() {
     <div className="space-y-6">
       {/* Hero */}
       <div className="space-y-1">
-        <p className="text-xs font-medium text-slate-500">
+        <p className="text-xs font-medium text-muted-foreground">
           Hi, {role?.name ?? 'Supervisor'} — {role?.role ?? ''}
         </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           What happened today?
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Tell NEXORA. We&apos;ll connect it to the project schedule.
         </p>
       </div>
@@ -290,7 +290,7 @@ export function SupervisorHome() {
       <div
         role="tablist"
         aria-label="Reporting mode"
-        className="grid grid-cols-3 gap-1 rounded-lg bg-slate-100 p-1"
+        className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1"
       >
         {(['text', 'voice', 'upload'] as Mode[]).map((m) => {
           const cfg = MODE_META[m]
@@ -306,8 +306,8 @@ export function SupervisorHome() {
               className={cn(
                 'flex items-center justify-center gap-1.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
                 active
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-transparent text-slate-600 hover:bg-slate-200/60',
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'bg-transparent text-muted-foreground hover:bg-muted/60',
               )}
             >
               <Icon className="h-4 w-4" />
@@ -386,7 +386,7 @@ function WriteForm({
         aria-describedby="report-text-count"
       />
       <div className="flex items-center justify-between gap-3">
-        <span id="report-text-count" className="text-xs text-slate-400 tabular-nums">
+        <span id="report-text-count" className="text-xs text-muted-foreground tabular-nums">
           {text.length} characters
         </span>
         <Button type="submit" disabled={!text.trim()}>
@@ -424,7 +424,7 @@ function VoiceForm({
 }) {
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         {recording ? (
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -433,8 +433,8 @@ function VoiceForm({
                 className="h-3 w-3 animate-pulse rounded-full bg-rose-500"
               />
               <div>
-                <p className="text-sm font-medium text-slate-900">Recording…</p>
-                <p className="text-xs text-slate-500 tabular-nums" aria-live="polite">
+                <p className="text-sm font-medium text-foreground">Recording…</p>
+                <p className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
                   {formatSeconds(seconds)}
                 </p>
               </div>
@@ -449,15 +449,15 @@ function VoiceForm({
             <Button
               type="button"
               onClick={onStart}
-              className="h-12 w-12 rounded-full bg-slate-900 p-0 text-white hover:bg-slate-800"
+              className="h-12 w-12 rounded-full bg-background p-0 text-foreground hover:bg-card"
               aria-label="Start voice recording"
               disabled={!mediaSupported}
             >
               <Mic className="h-5 w-5" />
             </Button>
             <div className="text-sm">
-              <p className="font-medium text-slate-800">Record your update</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-medium text-foreground">Record your update</p>
+              <p className="text-xs text-muted-foreground">
                 {mediaSupported
                   ? 'Tap to record from your microphone.'
                   : 'Voice recording is not available in this browser.'}
@@ -549,14 +549,14 @@ function UploadForm({
             'rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors',
             dragActive
               ? 'border-amber-400 bg-amber-50'
-              : 'border-slate-300 bg-slate-50 hover:bg-slate-100',
+              : 'border-border bg-muted hover:bg-muted',
           )}
         >
-          <FileUp className="mx-auto h-10 w-10 text-slate-400" aria-hidden />
-          <p className="mt-3 text-sm font-medium text-slate-700">
+          <FileUp className="mx-auto h-10 w-10 text-muted-foreground" aria-hidden />
+          <p className="mt-3 text-sm font-medium text-foreground">
             Tap to choose a file or drag it here
           </p>
-          <p className="mt-1 text-xs text-slate-500">.txt, .csv, .xlsx, .pdf</p>
+          <p className="mt-1 text-xs text-muted-foreground">.txt, .csv, .xlsx, .pdf</p>
           <input
             type="file"
             accept=".txt,.csv,.xlsx,.xls,.pdf"
@@ -597,28 +597,28 @@ function PreviewCard({
           <Check className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">I understood</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-xl font-semibold text-foreground">I understood</h2>
+          <p className="text-xs text-muted-foreground">
             Here is what NEXORA extracted from your report.
           </p>
         </div>
       </div>
 
       {mode === 'upload' && uploadedFilename && (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-700">
+        <div className="rounded-lg border border-border bg-muted p-3">
+          <div className="flex items-center gap-2 text-xs font-medium text-foreground">
             <FileText className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{uploadedFilename}</span>
           </div>
           {extractedPreview && (
-            <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs text-slate-600">
+            <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs text-muted-foreground">
               {extractedPreview}
             </p>
           )}
         </div>
       )}
 
-      <Card className="border-slate-200">
+      <Card className="border-border">
         <CardContent className="space-y-4">
           <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
             <Field label="Discipline">
@@ -639,8 +639,8 @@ function PreviewCard({
             </Field>
           </dl>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-500">
+          <div className="rounded-lg border border-border bg-muted p-3">
+            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Evidence from your report
             </div>
             <EvidenceHighlight raw={result.rawText} evidence={ev.evidence} />
@@ -667,8 +667,8 @@ function PreviewCard({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
-      <dt className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="text-sm font-medium text-slate-800">{children}</dd>
+      <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dd className="text-sm font-medium text-foreground">{children}</dd>
     </div>
   )
 }
@@ -713,8 +713,8 @@ function SuccessCard({
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-100 text-emerald-700">
         <CheckCircle2 className="h-9 w-9" />
       </div>
-      <h2 className="mt-5 text-xl font-semibold text-slate-900">Submitted to your planner</h2>
-      <p className="mt-1.5 text-sm text-slate-500">{summaryForSuccess(decision)}</p>
+      <h2 className="mt-5 text-xl font-semibold text-foreground">Submitted to your planner</h2>
+      <p className="mt-1.5 text-sm text-muted-foreground">{summaryForSuccess(decision)}</p>
       <div className="mt-6 flex flex-col gap-2">
         <Button onClick={onViewSubmissions}>
           <ListChecks className="h-4 w-4" />

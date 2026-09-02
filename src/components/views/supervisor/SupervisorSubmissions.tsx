@@ -85,13 +85,13 @@ export function SupervisorSubmissions() {
   return (
     <div className="space-y-5">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           My submissions
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           What you reported and how NEXORA resolved it.
           {!loading && !error && items.length > 0 && (
-            <span className="ml-1 text-slate-400">
+            <span className="ml-1 text-muted-foreground">
               · {items.length} report{items.length === 1 ? '' : 's'}
             </span>
           )}
@@ -159,7 +159,7 @@ function LoadingList() {
     <ul className="space-y-3" aria-busy="true" aria-label="Loading your submissions">
       {[0, 1, 2].map((i) => (
         <li key={i}>
-          <Card className="border-slate-200">
+          <Card className="border-border">
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
                 <Skeleton className="h-3.5 w-20" />
@@ -186,20 +186,20 @@ function SubmissionCard({ item }: { item: PlannerInboxItem }) {
 
   return (
     <li>
-      <Card className="border-slate-200 shadow-sm transition-colors hover:border-slate-300">
+      <Card className="border-border shadow-sm transition-colors hover:border-border">
         <CardContent className="space-y-3">
           {/* Top row: date · inputType · discipline */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="font-medium text-slate-700 tabular-nums">
+            <span className="font-medium text-foreground tabular-nums">
               {formatDate(item.reportDate)}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
               <Icon className="h-3 w-3" />
               {meta.label}
             </span>
             <DisciplineTag value={item.discipline} />
             {item.resolved ? (
-              <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-slate-400">
+              <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
                 <Inbox className="h-3 w-3" />
                 In planner inbox
               </span>
@@ -207,7 +207,7 @@ function SubmissionCard({ item }: { item: PlannerInboxItem }) {
           </div>
 
           {/* Raw statement (truncated to ~2 lines) */}
-          <p className="line-clamp-2 text-sm leading-relaxed text-slate-700">
+          <p className="line-clamp-2 text-sm leading-relaxed text-foreground">
             {item.rawContent}
           </p>
 
@@ -228,26 +228,26 @@ function SubmissionCard({ item }: { item: PlannerInboxItem }) {
 
 function ResolutionLine({ item }: { item: PlannerInboxItem }) {
   let line: React.ReactNode = null
-  let tone = 'text-slate-600'
+  let tone = 'text-muted-foreground'
 
   if (item.plannerAction === 'APPROVED' && item.plannerName) {
     line = (
       <>
-        Approved by <span className="font-medium text-slate-800">{item.plannerName}</span>
+        Approved by <span className="font-medium text-foreground">{item.plannerName}</span>
       </>
     )
     tone = 'text-emerald-700'
   } else if (item.plannerAction === 'REJECTED' && item.plannerName) {
     line = (
       <>
-        Rejected by <span className="font-medium text-slate-800">{item.plannerName}</span>
+        Rejected by <span className="font-medium text-foreground">{item.plannerName}</span>
       </>
     )
     tone = 'text-rose-700'
   } else if (item.plannerAction === 'CHANGED' && item.plannerName) {
     line = (
       <>
-        Updated by <span className="font-medium text-slate-800">{item.plannerName}</span>
+        Updated by <span className="font-medium text-foreground">{item.plannerName}</span>
       </>
     )
     tone = 'text-amber-700'
@@ -255,7 +255,7 @@ function ResolutionLine({ item }: { item: PlannerInboxItem }) {
     line = (
       <>
         Connected to{' '}
-        <span className="font-medium text-slate-800">{item.selectedActivityName}</span>
+        <span className="font-medium text-foreground">{item.selectedActivityName}</span>
       </>
     )
     tone = 'text-emerald-700'

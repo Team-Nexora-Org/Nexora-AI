@@ -102,10 +102,10 @@ export function PlannerInbox() {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           AI Resolution Workspace
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           From field reality → trusted schedule intelligence.
         </p>
       </header>
@@ -120,11 +120,11 @@ export function PlannerInbox() {
 
       <section className="space-y-3">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Execution reports
           </h2>
           {!loading && !error && items.length > 0 && (
-            <span className="text-xs text-slate-400 tabular-nums">{items.length} total</span>
+            <span className="text-xs text-muted-foreground tabular-nums">{items.length} total</span>
           )}
         </div>
 
@@ -188,21 +188,21 @@ function StatCard({
   hint: string
 }) {
   const toneClasses = {
-    slate: 'text-slate-900',
+    slate: 'text-foreground',
     emerald: 'text-emerald-700',
     amber: 'text-amber-700',
     rose: 'text-rose-700',
   }[tone]
   return (
-    <Card className="border-slate-200 py-4 shadow-sm">
+    <Card className="border-border py-4 shadow-sm">
       <CardContent className="space-y-1">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{label}</p>
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
         {value === null ? (
           <Skeleton className="h-7 w-10" />
         ) : (
           <p className={cn('text-2xl font-semibold tabular-nums', toneClasses)}>{value}</p>
         )}
-        <p className="text-[11px] text-slate-400">{hint}</p>
+        <p className="text-[11px] text-muted-foreground">{hint}</p>
       </CardContent>
     </Card>
   )
@@ -213,7 +213,7 @@ function InboxLoading() {
     <ul className="space-y-3" aria-busy="true" aria-label="Loading inbox">
       {[0, 1, 2, 3].map((i) => (
         <li key={i}>
-          <Card className="border-slate-200 py-4">
+          <Card className="border-border py-4">
             <CardContent className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
                 <Skeleton className="h-5 w-14 rounded" />
@@ -246,9 +246,9 @@ function InboxCard({
     <li>
       <Card
         className={cn(
-          'border-slate-200 py-4 shadow-sm transition-colors',
+          'border-border py-4 shadow-sm transition-colors',
           decided
-            ? 'hover:border-slate-300'
+            ? 'hover:border-border'
             : 'cursor-pointer hover:border-amber-300 hover:shadow',
         )}
         onClick={decided ? undefined : () => onOpen(item.reportId)}
@@ -264,16 +264,16 @@ function InboxCard({
         <CardContent className="space-y-3">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <DisciplineTag value={item.discipline} />
-            <span className="inline-flex items-center gap-1 text-slate-700">
-              <User className="h-3.5 w-3.5 text-slate-400" />
+            <span className="inline-flex items-center gap-1 text-foreground">
+              <User className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="font-medium">{item.supervisorName}</span>
             </span>
-            <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
               <Icon className="h-3 w-3" />
               {meta.label}
             </span>
-            <span className="inline-flex items-center gap-1 text-slate-500 tabular-nums">
-              <Clock className="h-3 w-3 text-slate-400" />
+            <span className="inline-flex items-center gap-1 text-muted-foreground tabular-nums">
+              <Clock className="h-3 w-3 text-muted-foreground" />
               {formatDate(item.reportDate)}
             </span>
             <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -284,7 +284,7 @@ function InboxCard({
           </div>
 
           {/* Raw field statement */}
-          <blockquote className="rounded-md border-l-2 border-amber-300 bg-slate-50 px-3 py-2 text-sm leading-relaxed text-slate-700">
+          <blockquote className="rounded-md border-l-2 border-amber-300 bg-muted px-3 py-2 text-sm leading-relaxed text-foreground">
             {item.rawContent}
           </blockquote>
 
@@ -313,7 +313,7 @@ function InboxCard({
 
 function ResolutionLine({ item }: { item: PlannerInboxItem }) {
   let line: React.ReactNode = null
-  let tone = 'text-slate-600'
+  let tone = 'text-muted-foreground'
 
   if (item.plannerAction === 'APPROVED' && item.plannerName) {
     line = (

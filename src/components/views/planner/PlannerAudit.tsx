@@ -167,10 +167,10 @@ export function PlannerAudit() {
     <div className="space-y-5">
       <TimelineStyle />
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Audit Trail
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Every submission, AI resolution, and planner decision — immutable record.
         </p>
       </header>
@@ -192,7 +192,7 @@ export function PlannerAudit() {
           </SelectContent>
         </Select>
         {!loading && !error && (
-          <p className="text-xs text-slate-500 tabular-nums">
+          <p className="text-xs text-muted-foreground tabular-nums">
             {visible.length} of {events.length} event{events.length === 1 ? '' : 's'}
           </p>
         )}
@@ -233,7 +233,7 @@ export function PlannerAudit() {
       )}
 
       {!error && !loading && visible.length > 0 && (
-        <Card className="border-slate-200 py-0">
+        <Card className="border-border py-0">
           <CardContent className="px-3 py-2">
             <ol
               className="nexora-scrollbar max-h-[75vh] space-y-1 overflow-auto pr-2"
@@ -252,7 +252,7 @@ export function PlannerAudit() {
                     {!isLast && (
                       <span
                         aria-hidden
-                        className="absolute left-[5px] top-7 bottom-0 w-px bg-slate-200"
+                        className="absolute left-[5px] top-7 bottom-0 w-px bg-muted"
                       />
                     )}
                     <span
@@ -264,7 +264,7 @@ export function PlannerAudit() {
                     />
                     <div className="min-w-0 flex-1 space-y-0.5">
                       <div className="flex flex-wrap items-baseline gap-2">
-                        <span className="text-xs font-medium tabular-nums text-slate-500">
+                        <span className="text-xs font-medium tabular-nums text-muted-foreground">
                           {fmtTime(ev.createdAt)}
                         </span>
                         {showActionBadge ? (
@@ -276,9 +276,9 @@ export function PlannerAudit() {
                               ev.action === 'RESOLVED' &&
                                 'border-amber-200 bg-amber-50 text-amber-700',
                               ev.action === 'SUBMITTED' &&
-                                'border-slate-200 bg-slate-50 text-slate-600',
+                                'border-border bg-muted text-muted-foreground',
                               (ev.action === 'SEEDED' || ev.action === 'RESET') &&
-                                'border-slate-200 bg-slate-50 text-slate-500',
+                                'border-border bg-muted text-muted-foreground',
                               ev.action === 'UPDATED' &&
                                 'border-emerald-200 bg-emerald-50 text-emerald-700',
                             )}
@@ -286,15 +286,15 @@ export function PlannerAudit() {
                             {ev.action}
                           </span>
                         )}
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-muted-foreground">
                           by{' '}
-                          <span className="font-medium text-slate-700">
+                          <span className="font-medium text-foreground">
                             {ev.actor}
                           </span>
                         </span>
                       </div>
                       {summary && (
-                        <p className="text-xs text-slate-600">{summary}</p>
+                        <p className="text-xs text-muted-foreground">{summary}</p>
                       )}
                     </div>
                   </li>
@@ -322,7 +322,7 @@ function TimelineStyle() {
 
 function AuditSkeleton() {
   return (
-    <Card className="border-slate-200 py-0">
+    <Card className="border-border py-0">
       <CardContent className="px-3 py-2">
         <ol className="space-y-1">
           {Array.from({ length: 10 }).map((_, i) => (

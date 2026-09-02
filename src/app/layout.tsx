@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { IntroWrapper } from "@/components/shared/IntroWrapper";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              const theme = localStorage.getItem('nexora-theme') || 'dark';
+              document.documentElement.setAttribute('data-theme', theme);
+            })();
+          `
+        }} />
         <IntroWrapper>
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
           {children}
           <Toaster />
           <SonnerToaster position="top-right" richColors closeButton />
