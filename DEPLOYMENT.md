@@ -77,6 +77,8 @@ npx tsx scripts/seed.ts       # wipe + reseed demo data
   wipes and re-seeds the entire database** and is currently public. This is fine
   for a demo/SIH submission, but add real authentication and protect `/api/seed`
   before using this in production.
-- `next.config.ts` has `output: "standalone"` and `typescript.ignoreBuildErrors: true`.
-  `standalone` is ignored by Vercel; `ignoreBuildErrors` means TS type errors will
-  not block the Vercel build.
+- `next.config.ts` has `typescript.ignoreBuildErrors: true` (so TS type errors will
+  not block the Vercel build).
+- `output: "standalone"` was **removed** from `next.config.ts`. Setting it caused a
+  Vercel build failure (`ENOENT: .next/next-server.js.nft.json`). Vercel does not
+  need standalone output — it uses its own build/handler.
